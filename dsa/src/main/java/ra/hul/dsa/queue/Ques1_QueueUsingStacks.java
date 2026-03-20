@@ -39,7 +39,7 @@ public class Ques1_QueueUsingStacks {
         }
     }
 
-    public static void main(String[] args) {
+    static void main() {
         Ques1_QueueUsingStacks queue = new Ques1_QueueUsingStacks();
         queue.push(1);
         queue.push(2);

@@ -29,7 +29,7 @@ public class Ques1_FloodFill {
         dfs(image, r, c - 1, originalColor, newColor);
     }
 
-    public static void main(String[] args) {
+    static void main() {
         int[][] image = {{1, 1, 1}, {1, 1, 0}, {1, 0, 1}};
         floodFill(image, 1, 1, 2);
         // [[2,2,2],[2,2,0],[2,0,1]]

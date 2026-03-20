@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class Ques1_BrokenLinkChecker {
 
-    public static void main(String[] args) {
+    static void main() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
 

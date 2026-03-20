@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.*;
  */
 public class Ques1_GetRequestValidation {
 
-    public static void main(String[] args) {
+    static void main() {
         RestAssured.baseURI = "https://reqres.in";
 
         System.out.println("=== Test 1: GET /api/users?page=1 ===");

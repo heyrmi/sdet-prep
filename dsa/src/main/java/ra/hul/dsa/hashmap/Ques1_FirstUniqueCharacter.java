@@ -24,7 +24,7 @@ public class Ques1_FirstUniqueCharacter {
         return -1;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(firstUniqChar("leetcode"));     // 0 ('l')
         System.out.println(firstUniqChar("loveleetcode")); // 2 ('v')
         System.out.println(firstUniqChar("aabb"));         // -1

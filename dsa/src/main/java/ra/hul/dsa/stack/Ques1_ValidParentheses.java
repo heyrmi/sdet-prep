@@ -27,7 +27,7 @@ public class Ques1_ValidParentheses {
         return stack.isEmpty();
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(isValid("()"));       // true
         System.out.println(isValid("()[]{}"));   // true
         System.out.println(isValid("(]"));       // false

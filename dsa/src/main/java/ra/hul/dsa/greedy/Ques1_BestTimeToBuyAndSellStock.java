@@ -18,7 +18,7 @@ public class Ques1_BestTimeToBuyAndSellStock {
         return maxProfit;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(maxProfit(new int[]{7, 1, 5, 3, 6, 4})); // 5 (buy@1, sell@6)
         System.out.println(maxProfit(new int[]{7, 6, 4, 3, 1}));    // 0 (no profit possible)
     }

@@ -19,7 +19,7 @@ public class Ques1_ReverseString {
         }
     }
 
-    public static void main(String[] args) {
+    static void main() {
         char[] s1 = {'h', 'e', 'l', 'l', 'o'};
         reverseString(s1);
         System.out.println(s1); // olleh

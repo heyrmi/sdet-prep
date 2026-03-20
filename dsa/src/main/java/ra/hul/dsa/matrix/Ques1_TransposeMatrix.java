@@ -21,7 +21,7 @@ public class Ques1_TransposeMatrix {
         return result;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         int[][] matrix = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
         int[][] transposed = transpose(matrix);
         // [[1,4,7],[2,5,8],[3,6,9]]

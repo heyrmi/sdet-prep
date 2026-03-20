@@ -19,7 +19,7 @@ public class Ques1_ClimbingStairs {
         return prev1;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(climbStairs(2));  // 2  (1+1, 2)
         System.out.println(climbStairs(3));  // 3  (1+1+1, 1+2, 2+1)
         System.out.println(climbStairs(5));  // 8

@@ -26,7 +26,7 @@ public class Ques1_Fibonacci {
         return prev1;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         for (int i = 0; i <= 10; i++) {
             System.out.printf("fib(%d) = %d (recursive) | %d (iterative)%n",
                     i, fibRecursive(i), fibIterative(i));

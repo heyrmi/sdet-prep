@@ -45,7 +45,7 @@ public class Ques1_FileComparator {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    static void main() throws IOException {
         String basePath = "sdet/src/main/resources/testdata/";
         compareFiles(basePath + "File1.txt", basePath + "File2.txt");
     }

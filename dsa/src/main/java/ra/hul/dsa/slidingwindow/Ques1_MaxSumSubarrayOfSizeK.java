@@ -22,7 +22,7 @@ public class Ques1_MaxSumSubarrayOfSizeK {
         return maxSum;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(maxSumSubarray(new int[]{2, 1, 5, 1, 3, 2}, 3)); // 9 (5+1+3)
         System.out.println(maxSumSubarray(new int[]{2, 3, 4, 1, 5}, 2));    // 7 (3+4)
     }

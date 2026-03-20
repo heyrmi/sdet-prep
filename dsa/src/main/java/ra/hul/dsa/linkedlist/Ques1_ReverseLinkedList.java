@@ -44,7 +44,7 @@ public class Ques1_ReverseLinkedList {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    static void main() {
         ListNode list = buildList(1, 2, 3, 4, 5);
         printList(list);               // 1 -> 2 -> 3 -> 4 -> 5
         printList(reverseList(list));   // 5 -> 4 -> 3 -> 2 -> 1

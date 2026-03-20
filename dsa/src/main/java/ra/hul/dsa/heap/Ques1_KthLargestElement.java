@@ -21,7 +21,7 @@ public class Ques1_KthLargestElement {
         return minHeap.peek();
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(findKthLargest(new int[]{3, 2, 1, 5, 6, 4}, 2));    // 5
         System.out.println(findKthLargest(new int[]{3, 2, 3, 1, 2, 4, 5, 5, 6}, 4)); // 4
     }

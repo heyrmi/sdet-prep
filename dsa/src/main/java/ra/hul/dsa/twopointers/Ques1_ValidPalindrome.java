@@ -22,7 +22,7 @@ public class Ques1_ValidPalindrome {
         return true;
     }
 
-    public static void main(String[] args) {
+    static void main() {
         System.out.println(isPalindrome("A man, a plan, a canal: Panama")); // true
         System.out.println(isPalindrome("race a car"));                     // false
         System.out.println(isPalindrome(" "));                              // true

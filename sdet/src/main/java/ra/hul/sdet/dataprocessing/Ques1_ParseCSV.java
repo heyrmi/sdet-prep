@@ -31,7 +31,7 @@ public class Ques1_ParseCSV {
         return employees;
     }
 
-    public static void main(String[] args) throws IOException {
+    static void main() throws IOException {
         String filePath = "sdet/src/main/resources/testdata/employees.csv";
         List<Employee> employees = parseCSV(filePath);
 

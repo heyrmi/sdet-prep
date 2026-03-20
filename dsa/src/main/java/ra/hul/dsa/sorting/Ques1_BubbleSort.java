@@ -27,7 +27,7 @@ public class Ques1_BubbleSort {
         }
     }
 
-    public static void main(String[] args) {
+    static void main() {
         int[] arr1 = {64, 34, 25, 12, 22, 11, 90};
         bubbleSort(arr1);
         System.out.println(Arrays.toString(arr1)); // [11, 12, 22, 25, 34, 64, 90]
