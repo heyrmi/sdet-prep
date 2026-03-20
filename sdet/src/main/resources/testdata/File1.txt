@@ -1,0 +1,5 @@
+Hello World
+This is a test file
+Line three is the same
+This line differs in File2
+Final line
