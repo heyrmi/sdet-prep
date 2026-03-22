@@ -1,3 +1,5 @@
+[![Run Framework Tests](https://github.com/heyrmi/sdet-prep/actions/workflows/run-tests.yml/badge.svg)](https://github.com/heyrmi/sdet-prep/actions/workflows/run-tests.yml)
+
 # SDET Interview Prep
 
 Unified interview preparation repo — DSA, SDET practical questions, and test automation framework — all under one roof.
