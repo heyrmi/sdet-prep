@@ -7,14 +7,13 @@ import org.apache.logging.log4j.Logger;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import ra.hul.framework.driver.DriverManager;
 import ra.hul.framework.pages.BasePage;
 import ra.hul.framework.reporting.ReportManager;
 
 /**
  * TestNG Listener — hooks into test lifecycle for:
  * 1. Auto-reporting (pass/fail/skip)
- * 2. Screenshot on failure
+ * 2. Screenshot on failure (UI tests only)
  * 3. Centralized logging
  * <p>
  * Registered in testng.xml (not via @Listeners — keeps tests clean)
@@ -39,34 +38,38 @@ public class TestListener implements ITestListener {
     @Override
     public void onTestSuccess(ITestResult result) {
         String testName = result.getMethod().getMethodName();
-        log.info("--- Test Success: {} ---", testName);
+        log.info("--- Test Passed: {} ---", testName);
         ReportManager.getTest().log(Status.PASS, "Test Passed");
+        ReportManager.removeTest();
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
         String testName = result.getMethod().getMethodName();
-        log.info("--- Test Failed: {} ---", testName);
+        log.error("--- Test Failed: {} ---", testName);
 
-        // Attach Screenshot for UI tests (driver exists
+        // Attempt screenshot — only works for UI tests (driver exists)
         try {
-            if (DriverManager.getDriver() != null) {
-                String base64Screenshot = BasePage.takesScreenshot(testName);
-                ReportManager.getTest().fail(result.getThrowable(),
-                        MediaEntityBuilder.createScreenCaptureFromBase64String(base64Screenshot).build());
-            }
+            String base64Screenshot = BasePage.captureScreenshot();
+            ReportManager.getTest().fail(result.getThrowable(),
+                    MediaEntityBuilder.createScreenCaptureFromBase64String(base64Screenshot).build());
         } catch (Exception e) {
-            // API won't have a driver
+            // API tests won't have a driver — log failure without screenshot
             ReportManager.getTest().fail(result.getThrowable());
         }
+        ReportManager.removeTest();
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
         String testName = result.getMethod().getMethodName();
-        log.info("--- Test Skipped: {} ---", testName);
+        log.warn("--- Test Skipped: {} ---", testName);
 
-        ReportManager.getTest().log(Status.SKIP, "Test Skipped" + result.getThrowable().getMessage());
+        String reason = result.getThrowable() != null
+                ? result.getThrowable().getMessage()
+                : "No reason provided";
+        ReportManager.getTest().log(Status.SKIP, "Test Skipped: " + reason);
+        ReportManager.removeTest();
     }
 
     @Override

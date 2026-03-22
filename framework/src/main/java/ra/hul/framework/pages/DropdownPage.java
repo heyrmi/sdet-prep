@@ -24,4 +24,9 @@ public class DropdownPage extends BasePage {
         WebElement element = WaitUtils.waitForVisible(dropdown);
         return new Select(element).getFirstSelectedOption().getText();
     }
+
+    @Override
+    public boolean isLoaded() {
+        return isDisplayed(dropdown);
+    }
 }

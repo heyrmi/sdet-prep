@@ -7,10 +7,11 @@ import org.testng.ITestResult;
 import ra.hul.framework.config.ConfigManager;
 
 public class RetryAnalyzer implements IRetryAnalyzer {
+
     private static final Logger log = LogManager.getLogger(RetryAnalyzer.class);
 
     private int currentRetry = 0;
-    private static final int MAX_RETRY = ConfigManager.getInt("retry.count");
+    private static final int MAX_RETRY = ConfigManager.getIntOrDefault("retry.count", 1);
 
     @Override
     public boolean retry(ITestResult result) {
@@ -18,7 +19,6 @@ public class RetryAnalyzer implements IRetryAnalyzer {
             currentRetry++;
             log.warn("Retrying test: {} (attempt {}/{})",
                     result.getMethod().getMethodName(), currentRetry, MAX_RETRY);
-
             return true;
         }
         return false;

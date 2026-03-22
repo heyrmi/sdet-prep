@@ -53,4 +53,9 @@ public class LoginPage extends BasePage {
         enterPassword(password);
         clickLogin();
     }
+
+    @Override
+    public boolean isLoaded() {
+        return isDisplayed(loginButton);
+    }
 }

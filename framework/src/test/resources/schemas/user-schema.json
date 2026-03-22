@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["json"],
+  "properties": {
+    "json": {
+      "type": "object",
+      "required": ["id", "name", "email", "job"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "job": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

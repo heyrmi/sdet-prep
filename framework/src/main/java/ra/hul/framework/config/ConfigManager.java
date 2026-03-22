@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Singleton config manager that supports environment based override
+ * Utility class for configuration management with environment-based overrides.
  * <p>
- * Design Patter: Singleton (eager), Strategy (env-based loading)
+ * Priority order (highest → lowest):
+ * 1. System properties (-Dbrowser=firefox)
+ * 2. Environment config (config-dev.properties via -Denv=dev)
+ * 3. Base config (config.properties)
  * <p>
- * Usage: ConfigManage.get("browser")
+ * Usage: ConfigManager.get("browser")
  * Override at runtime: -Dbrowser=firefox
  */
 public class ConfigManager {
@@ -25,15 +28,19 @@ public class ConfigManager {
     static {
         try {
             // 1. Load base config
-            properties.load(new FileInputStream(FrameworkConstants.CONFIG_PATH));
+            try (FileInputStream fis = new FileInputStream(FrameworkConstants.CONFIG_PATH)) {
+                properties.load(fis);
+            }
 
             // 2. Overlay env specific config if -Denv is set
             String env = System.getProperty("env");
             if (env != null && !env.isEmpty()) {
                 String envConfigPath = FrameworkConstants.CONFIG_PATH
                         .replace(".properties", "-" + env + ".properties");
-                properties.load(new FileInputStream(envConfigPath));
-                log.info("Load environment config: {}", envConfigPath);
+                try (FileInputStream fis = new FileInputStream(envConfigPath)) {
+                    properties.load(fis);
+                }
+                log.info("Loaded environment config: {}", envConfigPath);
             }
         } catch (IOException e) {
             log.error("Failed to load config file: {}", e.getMessage());
@@ -41,19 +48,41 @@ public class ConfigManager {
         }
     }
 
-    // Avoid Instantiation
+    // Prevent instantiation
     private ConfigManager() {
     }
 
+    /**
+     * Get a config value. Fails fast if the key is missing.
+     * System properties take highest priority (for CI/CD overrides).
+     */
     public static String get(String key) {
-        // System property gets highest priority (for CI/CD environment)
         String systemProp = System.getProperty(key);
         if (systemProp != null) return systemProp;
-        return properties.getProperty(key);
+        String value = properties.getProperty(key);
+        if (value == null) {
+            throw new IllegalStateException(
+                    "Missing config key: '" + key + "' — add it to config.properties or pass -D" + key + "=value");
+        }
+        return value;
+    }
+
+    /**
+     * Get a config value with a fallback default. Use when the key is optional.
+     */
+    public static String getOrDefault(String key, String defaultValue) {
+        String systemProp = System.getProperty(key);
+        if (systemProp != null) return systemProp;
+        return properties.getProperty(key, defaultValue);
     }
 
     public static int getInt(String key) {
         return Integer.parseInt(get(key));
+    }
+
+    public static int getIntOrDefault(String key, int defaultValue) {
+        String value = getOrDefault(key, null);
+        return value != null ? Integer.parseInt(value) : defaultValue;
     }
 
     public static boolean getBoolean(String key) {

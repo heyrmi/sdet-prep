@@ -2,7 +2,6 @@ package ra.hul.framework.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import ra.hul.framework.driver.DriverManager;
 import ra.hul.framework.config.ConfigManager;
 
 import java.util.List;
@@ -17,17 +16,22 @@ public class CheckboxPage extends BasePage {
     }
 
     public boolean isChecked(int index) {
-        List<WebElement> boxes = DriverManager.getDriver().findElements(checkboxes);
+        List<WebElement> boxes = findElements(checkboxes);
         return boxes.get(index).isSelected();
     }
 
     public CheckboxPage toggleCheckbox(int index) {
-        List<WebElement> boxes = DriverManager.getDriver().findElements(checkboxes);
+        List<WebElement> boxes = findElements(checkboxes);
         boxes.get(index).click();
         return this;
     }
 
     public int getCheckboxCount() {
-        return DriverManager.getDriver().findElements(checkboxes).size();
+        return findElements(checkboxes).size();
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return isDisplayed(checkboxes);
     }
 }

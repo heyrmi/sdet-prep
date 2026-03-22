@@ -21,7 +21,7 @@ import ra.hul.framework.driver.DriverManager;
  */
 public class BaseTest {
 
-    protected final Logger log = LogManager.getLogger(BaseTest.class);
+    protected final Logger log = LogManager.getLogger(getClass());
 
     @BeforeMethod
     public void setUp() {

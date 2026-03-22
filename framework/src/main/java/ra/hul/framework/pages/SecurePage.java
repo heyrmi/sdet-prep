@@ -28,4 +28,9 @@ public class SecurePage extends BasePage {
         click(logoutButton);
         return new LoginPage();
     }
+
+    @Override
+    public boolean isLoaded() {
+        return isDisplayed(logoutButton);
+    }
 }

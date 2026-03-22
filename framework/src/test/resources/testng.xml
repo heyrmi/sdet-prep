@@ -3,12 +3,11 @@
 
     <listeners>
         <listener class-name="ra.hul.framework.listeners.TestListener"/>
-        <listener class-name="ra.hul.framework.listeners.RetryAnalyzer"/>
+        <listener class-name="ra.hul.framework.listeners.RetryTransformer"/>
     </listeners>
 
     <test name="UI Tests">
         <classes>
-            <!-- Add your UI test classes here -->
             <class name="ra.hul.tests.ui.LoginTest"/>
             <class name="ra.hul.tests.ui.DropdownTest"/>
             <class name="ra.hul.tests.ui.CheckboxTest"/>
@@ -17,7 +16,6 @@
 
     <test name="API Tests">
         <classes>
-            <!-- Add your API test classes here -->
             <class name="ra.hul.tests.api.HttpBinApiTest"/>
         </classes>
     </test>

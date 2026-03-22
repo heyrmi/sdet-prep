@@ -3,13 +3,14 @@ package ra.hul.framework.pages;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 import ra.hul.framework.driver.DriverManager;
 import ra.hul.framework.utils.WaitUtils;
 
+import java.util.List;
+
 /**
- * Base class for all Page Objects.
+ * Abstract base class for all Page Objects.
  * <p>
  * Design Pattern: Template Method — defines the skeleton of page interactions.
  * All pages extend this and inherit common behavior.
@@ -17,12 +18,20 @@ import ra.hul.framework.utils.WaitUtils;
  * Why BasePage?
  * - DRY: Common actions (click, type, getText) defined once
  * - Encapsulation: WebDriver interactions wrapped with waits + logging
- * - Resilience: Built-in retry for StaleElementReferenceException
+ * - Contract: Every page must implement isLoaded() for readiness checks
  */
-public class BasePage {
-    protected final Logger log = LogManager.getLogger(BasePage.class);
+public abstract class BasePage {
 
-    // Core Actions
+    protected final Logger log = LogManager.getLogger(getClass());
+
+    /**
+     * Every page must define how to verify it has loaded.
+     * Use in assertions or wait conditions after navigation.
+     */
+    public abstract boolean isLoaded();
+
+    // ---- Core Actions ----
+
     protected void click(By locator) {
         log.info("Clicking: {}", locator);
         WaitUtils.waitForClickable(locator).click();
@@ -57,7 +66,13 @@ public class BasePage {
         new Select(element).selectByVisibleText(visibleText);
     }
 
-    // Navigation
+    protected List<WebElement> findElements(By locator) {
+        WaitUtils.waitForVisible(locator);
+        return DriverManager.getDriver().findElements(locator);
+    }
+
+    // ---- Navigation ----
+
     protected void navigateTo(String url) {
         log.info("Navigating to: {}", url);
         DriverManager.getDriver().get(url);
@@ -71,13 +86,15 @@ public class BasePage {
         return DriverManager.getDriver().getCurrentUrl();
     }
 
-    // JavaScript Executor
+    // ---- JavaScript Executor ----
+
     protected Object executeJs(String script, Object... args) {
         return ((JavascriptExecutor) DriverManager.getDriver()).executeScript(script, args);
     }
 
-    // Screenshot
-    public static String takesScreenshot(String testName) {
+    // ---- Screenshot ----
+
+    public static String captureScreenshot() {
         TakesScreenshot ts = (TakesScreenshot) DriverManager.getDriver();
         return ts.getScreenshotAs(OutputType.BASE64);
     }

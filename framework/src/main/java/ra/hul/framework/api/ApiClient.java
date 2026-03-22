@@ -2,12 +2,16 @@ package ra.hul.framework.api;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ra.hul.framework.config.ConfigManager;
+
+import java.util.Map;
 
 /**
  * Centralized API client built on RestAssured.
@@ -32,21 +36,27 @@ public class ApiClient {
     private final RequestSpecification requestSpec;
 
     public ApiClient() {
-        requestSpec = new RequestSpecBuilder()
-                .setBaseUri(ConfigManager.get("api.base.url"))
-                .setContentType(ContentType.JSON)
-                .setAccept(ContentType.JSON)
-                .build();
+        this(ConfigManager.get("api.base.url"));
     }
 
     /**
-     * Overloaded constructor for custom base URI (useful for testing different services)
+     * Constructor with custom base URI (useful for testing different services).
      */
     public ApiClient(String baseUri) {
+        if (baseUri == null || baseUri.isBlank()) {
+            throw new IllegalArgumentException("Base URI cannot be null or blank");
+        }
+
+        int timeoutMs = ConfigManager.getIntOrDefault("api.timeout", 10) * 1000;
+
         requestSpec = new RequestSpecBuilder()
                 .setBaseUri(baseUri)
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
+                .setConfig(RestAssuredConfig.config()
+                        .httpClient(HttpClientConfig.httpClientConfig()
+                                .setParam("http.connection.timeout", timeoutMs)
+                                .setParam("http.socket.timeout", timeoutMs)))
                 .build();
     }
 
@@ -71,7 +81,7 @@ public class ApiClient {
                 .extract().response();
     }
 
-    public Response getWithQueryParams(String endpoint, java.util.Map<String, String> params) {
+    public Response getWithQueryParams(String endpoint, Map<String, String> params) {
         log.info("GET {} with params: {}", endpoint, params);
         return RestAssured.given()
                 .spec(requestSpec)
@@ -100,6 +110,17 @@ public class ApiClient {
                 .body(body)
                 .when()
                 .put(endpoint)
+                .then()
+                .extract().response();
+    }
+
+    public Response patch(String endpoint, Object body) {
+        log.info("PATCH {}", endpoint);
+        return RestAssured.given()
+                .spec(requestSpec)
+                .body(body)
+                .when()
+                .patch(endpoint)
                 .then()
                 .extract().response();
     }

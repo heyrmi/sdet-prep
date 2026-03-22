@@ -1,12 +1,14 @@
 package ra.hul.tests.api;
 
+import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import ra.hul.framework.api.ApiClient;
+import ra.hul.framework.config.ConfigManager;
+import ra.hul.framework.models.User;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,9 +54,7 @@ public class HttpBinApiTest {
 
     @Test(description = "GET with query parameters should echo them back")
     public void get_withQueryParams_shouldEchoParams() {
-        Map<String, String> params = new HashMap<>();
-        params.put("search", "hotstar");
-        params.put("page", "1");
+        Map<String, String> params = Map.of("search", "hotstar", "page", "1");
 
         Response response = apiClient.getWithQueryParams("/get", params);
 
@@ -80,18 +80,18 @@ public class HttpBinApiTest {
 
     @Test(description = "POST should echo back the sent JSON body")
     public void post_withJsonBody_shouldEchoBody() {
-        Map<String, Object> body = new HashMap<>();
-        body.put("name", "Rahul Mishra");
-        body.put("role", "Senior SDET");
-        body.put("company", "JioStar");
+        Map<String, Object> body = Map.of(
+                "name", "Rahul Mishra",
+                "role", "Senior SDET",
+                "company", "Company"
+        );
 
         Response response = apiClient.post("/post", body);
 
         Assert.assertEquals(response.statusCode(), 200);
-        // httpbin returns sent data in "json" field
         Assert.assertEquals(response.jsonPath().getString("json.name"), "Rahul Mishra");
         Assert.assertEquals(response.jsonPath().getString("json.role"), "Senior SDET");
-        Assert.assertEquals(response.jsonPath().getString("json.company"), "JioStar");
+        Assert.assertEquals(response.jsonPath().getString("json.company"), "Company");
     }
 
     @Test(description = "POST should reflect correct Content-Type header")
@@ -198,13 +198,14 @@ public class HttpBinApiTest {
     // Response Time / Performance Test
     // ============================
 
-    @Test(description = "GET /get should respond within 3 seconds")
+    @Test(description = "GET /get should respond within configurable SLA")
     public void get_shouldRespondWithinSLA() {
         Response response = apiClient.get("/get");
 
         Assert.assertEquals(response.statusCode(), 200);
-        Assert.assertTrue(response.time() < 3000,
-                "Response time " + response.time() + "ms exceeded 3000ms SLA");
+        long slaMs = Long.parseLong(ConfigManager.getOrDefault("api.sla.ms", "5000"));
+        Assert.assertTrue(response.time() < slaMs,
+                "Response time " + response.time() + "ms exceeded " + slaMs + "ms SLA");
     }
 
     // ============================
@@ -216,7 +217,7 @@ public class HttpBinApiTest {
         // Step 1: POST data
         Map<String, Object> userData = Map.of(
                 "name", "Rahul",
-                "email", "rahul@jiostar.com",
+                "email", "rahul@company.com",
                 "role", "Senior SDET"
         );
 
@@ -228,12 +229,32 @@ public class HttpBinApiTest {
         String echoedEmail = postResponse.jsonPath().getString("json.email");
 
         Assert.assertEquals(echoedName, "Rahul");
-        Assert.assertEquals(echoedEmail, "rahul@jiostar.com");
+        Assert.assertEquals(echoedEmail, "rahul@company.com");
 
         // Step 3: Use extracted data in next request
         Map<String, String> queryParams = Map.of("user", echoedName);
         Response getResponse = apiClient.getWithQueryParams("/get", queryParams);
 
         Assert.assertEquals(getResponse.jsonPath().getString("args.user"), "Rahul");
+    }
+
+    // ============================
+    // Schema Validation Test
+    // ============================
+
+    @Test(description = "POST User POJO and validate echoed JSON matches schema")
+    public void post_userPojo_shouldMatchSchema() {
+        User user = User.builder()
+                .id(1)
+                .name("Rahul Mishra")
+                .email("rahul@company.com")
+                .job("Senior SDET")
+                .build();
+
+        Response response = apiClient.post("/post", user);
+        Assert.assertEquals(response.statusCode(), 200);
+
+        response.then().assertThat()
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/user-schema.json"));
     }
 }
