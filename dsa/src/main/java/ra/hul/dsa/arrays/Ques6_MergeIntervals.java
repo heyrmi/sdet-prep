@@ -19,7 +19,7 @@ public class Ques6_MergeIntervals {
             int[] lastAddedInterval = result.getLast();
             int[] currentInterval = intervals[i];
 
-            // if currentInterval's start time is <= lastAddedInterval, merge them
+            // if currentInterval's start time is <= lastAddedInterval end time, merge them
             if (currentInterval[0] <= lastAddedInterval[1]) {
                 // overlap => extend the end
                 lastAddedInterval[1] = Math.max(currentInterval[1], lastAddedInterval[1]);
@@ -32,9 +32,9 @@ public class Ques6_MergeIntervals {
     }
 
     static void main() {
-        System.out.println(Arrays.deepToString(merge(new int[][]{{1,3},{2,6},{8,10},{15,18}})));  // [[1, 6], [8, 10], [15, 18]]
-        System.out.println(Arrays.deepToString(merge(new int[][]{{1,4},{4,5}})));                 // [[1, 5]]
-        System.out.println(Arrays.deepToString(merge(new int[][]{{1,4},{0,4}})));                 // [[0, 4]]
-        System.out.println(Arrays.deepToString(merge(new int[][]{{1,4},{2,3}})));                 // [[1, 4]]
+        System.out.println(Arrays.deepToString(merge(new int[][]{{1, 3}, {2, 6}, {8, 10}, {15, 18}})));  // [[1, 6], [8, 10], [15, 18]]
+        System.out.println(Arrays.deepToString(merge(new int[][]{{1, 4}, {4, 5}})));                 // [[1, 5]]
+        System.out.println(Arrays.deepToString(merge(new int[][]{{1, 4}, {0, 4}})));                 // [[0, 4]]
+        System.out.println(Arrays.deepToString(merge(new int[][]{{1, 4}, {2, 3}})));                 // [[1, 4]]
     }
 }
