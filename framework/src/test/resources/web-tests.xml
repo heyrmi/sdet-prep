@@ -1,0 +1,23 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Web Test Suite" parallel="methods" thread-count="10">
+    <listeners>
+        <listener class-name="ra.hul.framework.core.listeners.AllureTestListener"/>
+        <listener class-name="ra.hul.framework.core.listeners.RetryTransformer"/>
+    </listeners>
+
+    <test name="Web Regression Tests">
+        <classes>
+            <class name="ra.hul.tests.web.LoginTest"/>
+            <class name="ra.hul.tests.web.CheckboxTest"/>
+            <class name="ra.hul.tests.web.DropdownTest"/>
+            <class name="ra.hul.tests.web.DynamicLoadingTest"/>
+            <class name="ra.hul.tests.web.FileUploadTest"/>
+            <class name="ra.hul.tests.web.FileDownloadTest"/>
+            <class name="ra.hul.tests.web.JavaScriptAlertsTest"/>
+            <class name="ra.hul.tests.web.FramesTest"/>
+            <class name="ra.hul.tests.web.MultipleWindowsTest"/>
+            <class name="ra.hul.tests.web.DragAndDropTest"/>
+            <class name="ra.hul.tests.web.HoverTest"/>
+        </classes>
+    </test>
+</suite>

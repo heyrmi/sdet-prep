@@ -9,7 +9,8 @@ on:
         type: choice
         options:
           - api
-          - ui
+          - web
+          - smoke
           - all
 
 jobs:
@@ -27,30 +28,34 @@ jobs:
           java-version: '25'
           cache: 'maven'
 
-      - name: Install Chrome (UI tests)
-        if: inputs.test-type == 'ui' || inputs.test-type == 'all'
+      - name: Install Chrome (web tests)
+        if: inputs.test-type == 'web' || inputs.test-type == 'smoke' || inputs.test-type == 'all'
         uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: 'stable'
 
       - name: Run API tests
         if: inputs.test-type == 'api'
-        run: mvn test -pl framework -Dtest=HttpBinApiTest -Dsurefire.useFile=false
+        run: mvn test -pl framework -Papi -Dsurefire.useFile=false
 
-      - name: Run UI tests
-        if: inputs.test-type == 'ui'
-        run: mvn test -pl framework -Dtest="LoginTest,CheckboxTest,DropdownTest" -Dheadless=true -Dsurefire.useFile=false
+      - name: Run Web tests
+        if: inputs.test-type == 'web'
+        run: mvn test -pl framework -Pweb -Dheadless=true -Dsurefire.useFile=false
+
+      - name: Run Smoke tests
+        if: inputs.test-type == 'smoke'
+        run: mvn test -pl framework -Psmoke -Dheadless=true -Dsurefire.useFile=false
 
       - name: Run all tests
         if: inputs.test-type == 'all'
         run: mvn test -pl framework -Dheadless=true -Dsurefire.useFile=false
 
-      - name: Upload test report
+      - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report-${{ inputs.test-type }}
-          path: framework/target/extent-report.html
+          name: allure-results-${{ inputs.test-type }}
+          path: framework/target/allure-results/
           retention-days: 7
 
       - name: Upload surefire reports

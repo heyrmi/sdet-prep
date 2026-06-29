@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -9,45 +11,95 @@
     </parent>
 
     <artifactId>framework</artifactId>
-    <name>Test Automation Framework</name>
-    <description>Production-grade test automation framework with Selenium, RestAssured, TestNG</description>
+    <packaging>jar</packaging>
+
+    <name>Full Stack SDET Framework</name>
+    <description>Production-grade test automation framework: Web, API, Mobile, Performance</description>
 
     <properties>
-        <extentreports.version>5.1.2</extentreports.version>
-        <log4j.version>2.24.3</log4j.version>
-        <slf4j.version>2.0.16</slf4j.version>
-        <jackson.version>2.18.2</jackson.version>
-        <lombok.version>1.18.38</lombok.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependency Versions -->
+        <selenium.version>4.41.0</selenium.version>
+        <testng.version>7.12.0</testng.version>
+        <rest-assured.version>6.0.0</rest-assured.version>
+        <appium.version>10.1.0</appium.version>
+        <gatling.version>3.15.0</gatling.version>
+        <allure.version>2.33.0</allure.version>
+        <aspectj.version>1.9.25.1</aspectj.version>
+        <log4j.version>2.25.3</log4j.version>
+        <jackson.version>3.1.0</jackson.version>
+        <lombok.version>1.18.44</lombok.version>
+
+        <!-- Plugin Versions -->
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <gatling-maven-plugin.version>4.21.5</gatling-maven-plugin.version>
+        <allure-maven.version>2.17.0</allure-maven.version>
+
+        <!-- Test Execution -->
+        <suiteXmlFile>src/test/resources/all-tests.xml</suiteXmlFile>
     </properties>
 
     <dependencies>
-        <!-- Web Automation -->
+        <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
         </dependency>
 
-        <!-- Test Framework -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
         </dependency>
 
-        <!-- API Testing -->
+        <!-- Rest Assured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>json-schema-validator</artifactId>
+            <version>${rest-assured.version}</version>
         </dependency>
 
-        <!-- Reporting -->
+        <!-- Appium -->
         <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>extentreports</artifactId>
-            <version>${extentreports.version}</version>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>${appium.version}</version>
+        </dependency>
+
+        <!-- Gatling (Java DSL) -->
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>${gatling.version}</version>
+        </dependency>
+
+        <!-- Allure -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+
+        <!-- AspectJ (required for Allure @Step weaving) -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
 
         <!-- Logging -->
@@ -66,20 +118,15 @@
             <artifactId>log4j-slf4j2-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
 
-        <!-- JSON Serialization -->
+        <!-- Jackson -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
 
-        <!-- Lombok — reduces POJO boilerplate -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -90,30 +137,89 @@
 
     <build>
         <plugins>
+            <!-- Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
+                    <release>21</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.38</version>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Surefire (TestNG runner) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <!-- Gatling -->
+            <plugin>
+                <groupId>io.gatling</groupId>
+                <artifactId>gatling-maven-plugin</artifactId>
+                <version>${gatling-maven-plugin.version}</version>
+                <configuration>
+                    <simulationsFolder>src/main/java</simulationsFolder>
+                    <resultsFolder>target/gatling</resultsFolder>
+                </configuration>
+            </plugin>
+
+            <!-- Allure Report -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure-maven.version}</version>
+                <configuration>
+                    <reportVersion>${allure.version}</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>web</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/web-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>api</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/api-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>mobile</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/mobile-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>smoke</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/smoke-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+    </profiles>
 </project>

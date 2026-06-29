@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="API Test Suite" parallel="methods" thread-count="20">
+    <listeners>
+        <listener class-name="ra.hul.framework.core.listeners.AllureTestListener"/>
+        <listener class-name="ra.hul.framework.core.listeners.RetryTransformer"/>
+    </listeners>
+
+    <test name="API Tests">
+        <classes>
+            <class name="ra.hul.tests.api.GetRequestTest"/>
+            <class name="ra.hul.tests.api.PostRequestTest"/>
+            <class name="ra.hul.tests.api.PutPatchDeleteTest"/>
+            <class name="ra.hul.tests.api.AuthenticationTest"/>
+            <class name="ra.hul.tests.api.HeadersTest"/>
+            <class name="ra.hul.tests.api.SchemaValidationTest"/>
+            <class name="ra.hul.tests.api.ResponseTimeTest"/>
+            <class name="ra.hul.tests.api.ResponseChainingTest"/>
+        </classes>
+    </test>
+</suite>
