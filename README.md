@@ -45,28 +45,27 @@ sdet-prep/                          (parent pom - multi-module)
 │       ├── regex/                  Pattern matching, text processing
 │       └── performance/            Load testing, throughput measurement
 │
-└── framework/                      Build this yourself — skeleton ready
-    ├── FRAMEWORK_GUIDE.md          What to build in each package
+└── framework/                      Full-stack test automation framework (Web + API + Mobile + Perf)
+    ├── README.md                   Detailed framework docs (setup, patterns, CI)
+    ├── MOBILE_SETUP.md             Appium / emulator setup guide
     ├── src/main/java/ra/hul/framework/
-    │   ├── api/                    ApiRequestBuilder, ApiResponseValidator
-    │   ├── config/                 ConfigReader (Singleton, env layering)
-    │   ├── constants/              Endpoints, TimeoutConstants
-    │   ├── driver/                 DriverFactory (Factory + ThreadLocal)
-    │   ├── listeners/              TestListener, RetryAnalyzer, RetryTransformer
-    │   ├── models/                 POJOs for API serialization
-    │   ├── pages/                  BasePage + Page Objects (POM)
-    │   ├── reporting/              ExtentReportManager
-    │   └── utils/                  WaitHelper, ScreenshotUtil, JsonUtils
+    │   ├── core/                   ConfigManager, constants, Allure/retry listeners
+    │   ├── web/                    DriverFactory (Strategy), POM page objects, WaitUtils
+    │   ├── api/                    ApiClient (Rest Assured) + Lombok POJOs
+    │   ├── mobile/                 Appium driver/screen objects (Screen Object Model)
+    │   └── performance/            Gatling load-test simulations
     ├── src/test/java/ra/hul/tests/
-    │   ├── base/                   BaseTest, BaseApiTest
-    │   ├── ui/                     UI test classes
-    │   └── api/                    API test classes
+    │   ├── base/                   BaseWebTest, BaseApiTest, BaseMobileTest
+    │   ├── web/                    11 web test classes
+    │   ├── api/                    8 API test classes
+    │   └── mobile/                 5 mobile test classes
     └── src/test/resources/
-        ├── config.properties       Default config
-        ├── config-dev.properties   Dev overrides
-        ├── testng.xml              Suite configuration
-        ├── log4j2.xml              Logging configuration
-        └── schemas/                JSON schema files
+        ├── config.properties              Default config
+        ├── config-{dev,stage,prod}.properties   Environment overrides
+        ├── {web,api,mobile,smoke,all}-tests.xml  TestNG suites
+        ├── allure.properties / categories.json  Allure reporting config
+        ├── log4j2.xml                      Logging configuration
+        └── schemas/                        JSON schema files
 ```
 
 ## Prep Guides
@@ -75,7 +74,7 @@ sdet-prep/                          (parent pom - multi-module)
 |-------|----------|----------------|
 | **DSA** | `dsa/DSA_INTERVIEW_QUESTIONS.md` | ~200 problems across 18 topics, ranked by frequency at Google/Amazon/Meta/Microsoft/Apple/Netflix/Hotstar. MUST-DO vs GOOD-TO-KNOW. 8-week study plan. |
 | **SDET** | `sdet/SDET_INTERVIEW_QUESTIONS.md` | 100+ practical questions across 13 categories. File ops, scraping, API, Selenium, DB, multithreading, regex, performance. 10 "build from scratch" challenges. 5-week study plan. |
-| **Framework** | `framework/FRAMEWORK_GUIDE.md` | What to build in each package. Design patterns. Reference to hotstar-interview-framework. |
+| **Framework** | `framework/README.md` | Production-grade automation framework spanning Web, API, Mobile, and Performance. Design patterns, config resolution, CI/CD, contributing rules. |
 
 ## Naming Convention
 
@@ -93,16 +92,21 @@ cd dsa && mvn exec:java -Dexec.mainClass="ra.hul.dsa.arrays.Ques1_TwoSum"
 # Run any SDET question
 cd sdet && mvn exec:java -Dexec.mainClass="ra.hul.sdet.api.Ques1_GetRequestValidation"
 
-# Run framework tests
-cd framework && mvn test
+# Run framework tests (per module via Maven profiles)
+cd framework && mvn test -Pweb     # or -Papi / -Pmobile / -Psmoke; bare `mvn test` runs all
 ```
+
+> See `framework/README.md` for environment/browser selection, remote/grid execution, Gatling performance runs, and Allure reporting.
 
 ## Tech Stack
 
-- **Java 25**
-- **Selenium 4.41.0** — UI automation
+- **Java 25** — toolchain (DSA/SDET modules); the framework module compiles at release 21
+- **Selenium 4.41.0** — web automation
 - **REST Assured 6.0.0** — API testing
-- **TestNG 7.12.0** — Test framework
-- **ExtentReports 5.1.2** — HTML reporting (framework module)
-- **Log4j2 2.24.3** — Logging (framework module)
-- **Jackson 2.18.2** — JSON serialization (framework module)
+- **Appium 10.1.0** — mobile automation (framework module)
+- **Gatling 3.15.0** — performance / load testing (framework module)
+- **TestNG 7.12.0** — test runner
+- **Allure 2.33.0** — reporting (framework module)
+- **Log4j2 2.25.3** — logging (framework module)
+- **Jackson 3.1.0** — JSON serialization (framework module)
+- **Lombok 1.18.44** — boilerplate reduction (framework module)
