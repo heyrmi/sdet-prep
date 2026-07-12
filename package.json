@@ -9,8 +9,13 @@
 	"scripts": {
 		"test": "npx playwright test",
 		"test:ui": "npx playwright test --project=Chrome",
+		"test:crossbrowser": "npx playwright test --project=Chrome --project=Firefox --project=Edge --project=Safari --project=\"Mobile Chrome\" --project=\"Mobile Safari\"",
 		"test:api": "npx playwright test --project=API",
 		"test:freeapi": "npx playwright test --project=FreeAPI",
+		"test:visual": "npx playwright test --project=Chromium --grep @visual",
+		"test:visual:update": "npx playwright test --project=Chromium --grep @visual --update-snapshots",
+		"test:a11y": "npx playwright test --project=Chromium --grep @a11y",
+		"test:contract": "node --import tsx --test contract/*.pact.test.ts",
 		"test:smoke": "npx playwright test --grep @smoke",
 		"test:headed": "npx playwright test --headed",
 		"test:debug": "npx playwright test --debug",
@@ -28,11 +33,15 @@
 	"license": "MIT",
 	"type": "module",
 	"devDependencies": {
+		"@axe-core/playwright": "^4.12.1",
 		"@biomejs/biome": "2.3.13",
+		"@faker-js/faker": "^10.5.0",
+		"@pact-foundation/pact": "^17.0.1",
 		"@playwright/test": "^1.58.0",
 		"@types/node": "^25.1.0",
 		"dotenv": "^17.2.3",
 		"rimraf": "^6.1.2",
+		"tsx": "^4.23.0",
 		"zod": "^4.3.6"
 	}
 }

@@ -27,6 +27,13 @@ improvements.md
 # Downloads
 temp-downloads/
 
+# Pact: keep generated contracts under pacts/ committable, ignore run logs
+logs/pact/
+pact/logs/
+
+# NOTE: visual-baselines/ and pacts/ are intentionally NOT ignored — they are
+# committed artifacts (visual snapshots + consumer contracts).
+
 # Mac
 .DS_Store
 
