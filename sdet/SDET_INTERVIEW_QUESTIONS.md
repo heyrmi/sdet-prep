@@ -2,6 +2,28 @@
 
 > Practical, hands-on SDET (Software Development Engineer in Test) interview questions asked at top tech companies. These are NOT DSA questions -- these are real-world coding and automation problems.
 
+> 🏢 **Looking for company-specific questions?** See the [Company-Wise Question Bank](company-questions/) — 932 verbal/scenario questions across 32 companies (Google, Apple, Meta, Microsoft, Amazon, and more), plus a fully-answered [JioStar/Hotstar framework round](company-questions/jiostar-hotstar-framework-round.md).
+
+> ✅ **Where's the code?** 53 of these problems are implemented as runnable Java under
+> [`src/main/java/ra/hul/sdet/`](src/main/java/ra/hul/sdet/) — see the module [README](README.md) for the
+> category→package map. Coverage by category:
+>
+> | Category (guide §) | Status |
+> |---|---|
+> | §1 File Operations | ✅ implemented — `fileops` (8) |
+> | §2 Web Scraping | ✅ starter in `scraping` (1); full DOM scraping → [`../framework/`](../framework/) + [`../playwright/`](../playwright/) |
+> | §3 API Testing | ✅ implemented — `api` (6, need network) |
+> | §4 Data Processing | ✅ implemented — `dataprocessing` (7) |
+> | §5 Selenium Practical | 🔗 covered by [`../framework/`](../framework/) (Java) + [`../playwright/`](../playwright/) (TS) — not duplicated here |
+> | §6 Database Operations | 💬 discussion (add H2 to make runnable) |
+> | §7 Linux/Unix in Java | ✅ implemented — `linux` (3); SSH ones are discussion |
+> | §8 Multithreading | ✅ implemented — `multithreading` (4) |
+> | §9 Design Patterns | ✅ implemented — `designpatterns` (7) |
+> | §10 Regex & Text | ✅ implemented — `regex` (7) |
+> | §11 Performance | ✅ starter in `performance` (2, need network); load testing → Gatling in [`../framework/`](../framework/) |
+> | §12 Build From Scratch | ✅ implemented — `builds` (7) |
+> | §13 Framework Design | 🔗 the working answer is [`../framework/`](../framework/) + [`../playwright/`](../playwright/) |
+
 ---
 
 ## Table of Contents
