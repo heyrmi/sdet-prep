@@ -12,6 +12,10 @@ Want to see what *complete, detailed answers* to a real company round look like?
 ~17 sections of fully-answered questions (framework architecture, concurrency, TestNG, waits,
 CI/CD, Grid/Docker, flaky tests, streaming/DRM testing) modelled on this repo's own framework.
 
+> **📝 Model-answer companions** now exist for the top-5 banks — full JioStar-depth answers to every
+> question: [Google](google-model-answers.md) · [Amazon](amazon-model-answers.md) ·
+> [Meta](meta-model-answers.md) · [Microsoft](microsoft-model-answers.md) · [Apple](apple-model-answers.md).
+
 ## FAANG + Streaming
 
 | Company | Questions | Easy / Med / Hard | Focus |
