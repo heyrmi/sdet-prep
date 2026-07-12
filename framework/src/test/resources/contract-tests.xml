@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Contract Test Suite" parallel="none" thread-count="1">
+    <listeners>
+        <listener class-name="ra.hul.framework.core.listeners.AllureTestListener"/>
+        <listener class-name="ra.hul.framework.core.listeners.RetryTransformer"/>
+    </listeners>
+
+    <!-- Consumer runs first so the pact is written before provider verification replays it. -->
+    <test name="Contract Tests">
+        <classes>
+            <class name="ra.hul.tests.contract.ConsumerContractTest"/>
+            <class name="ra.hul.tests.contract.ProviderContractVerificationTest"/>
+            <class name="ra.hul.tests.data.DataFactoryTest"/>
+        </classes>
+    </test>
+</suite>
