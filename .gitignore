@@ -37,3 +37,7 @@ build/
 
 ## Logs folder ##
 logs/
+
+### Go (study-tracker binary; state lives in ~/.srs) ###
+study-tracker/srs
+*.test

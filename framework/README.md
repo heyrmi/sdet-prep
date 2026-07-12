@@ -5,6 +5,11 @@
 
 A production-grade test automation framework built with Java 21, covering Web, API, Mobile, and Performance testing. Designed for real-world adoption and structured around industry-standard design patterns.
 
+> **Part of the [SDET Interview Prep mega-repo](../README.md).** This is the Java automation pillar; its
+> TypeScript counterpart is [`../playwright/`](../playwright/). See also [`../dsa/`](../dsa/) (coding),
+> [`../sdet/`](../sdet/) (practical problems + company bank), [`../sd/`](../sd/) (system design), and
+> [`../study-tracker/`](../study-tracker/) (spaced-repetition tracker).
+
 ---
 
 ## Table of Contents

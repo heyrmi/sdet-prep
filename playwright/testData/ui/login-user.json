@@ -1,0 +1,30 @@
+[
+	{
+		"testName": "should login successfully with valid credentials",
+		"username": "tomsmith",
+		"password": "SuperSecretPassword!",
+		"expectedMessage": "You logged into a secure area!",
+		"shouldSucceed": true
+	},
+	{
+		"testName": "should show error with invalid username",
+		"username": "invaliduser",
+		"password": "SuperSecretPassword!",
+		"expectedMessage": "Your username is invalid!",
+		"shouldSucceed": false
+	},
+	{
+		"testName": "should show error with invalid password",
+		"username": "tomsmith",
+		"password": "wrongpassword",
+		"expectedMessage": "Your password is invalid!",
+		"shouldSucceed": false
+	},
+	{
+		"testName": "should show error with empty credentials",
+		"username": "",
+		"password": "",
+		"expectedMessage": "Your username is invalid!",
+		"shouldSucceed": false
+	}
+]
