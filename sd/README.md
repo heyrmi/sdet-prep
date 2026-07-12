@@ -39,6 +39,7 @@ sd/
 │       ├── README.md                 ← the design lesson (requirements → estimate → design → deep dive)
 │       ├── assignment/               ← Go starter code + a test suite that defines "done"
 │       └── solution/                 ← reference Go solution (peek only after you try!)
+├── 05-sdet-system-design/            ← test-flavored system design for the SDET loop (Markdown only)
 └── GLOSSARY.md                       ← every term, one-line definition
 ```
 
@@ -145,6 +146,18 @@ Each is a full design lesson **plus** a Go assignment.
 > The course is built to grow. More case studies (Nearby Friends, Google Maps, Hotel
 > Reservation, Digital Wallet, Stock Exchange, Distributed Email, Gaming Leaderboard) follow
 > the same template and can be added as you progress.
+
+### Module 5 — SDET System Design (design the systems that test the systems)
+Test-flavored system design for the senior SDET interview loop. Discussion/design lessons
+(Markdown only — no Go assignments); see the [module intro](05-sdet-system-design/).
+
+| # | Lesson | Core concepts exercised |
+|---|--------|--------------------------|
+| 5.1 | [Design a Test Automation Platform](05-sdet-system-design/01-design-a-test-automation-platform.md) | job queue, duration-aware sharding, worker fleet, result store, artifact storage, flake detection, quarantine, shard math |
+| 5.2 | [Design a CI/CD Pipeline](05-sdet-system-design/02-design-a-ci-cd-pipeline.md) | stage DAG, build-once-promote, caching, test impact analysis, quality gates, canary/blue-green/rollback, secrets |
+| 5.3 | [Design Test Infrastructure at Scale](05-sdet-system-design/03-design-test-infrastructure-at-scale.md) | Selenium Grid, containerized browsers, session routing, ephemeral environments, autoscaling, concurrent-session sizing |
+| 5.4 | [Design for Testability](05-sdet-system-design/04-design-for-testability.md) | seams & DI, test hooks, fault injection, test data management, contract testing (Pact), chaos & load harnesses |
+| 5.5 | [Flaky Test Detection & Quarantine](05-sdet-system-design/05-flaky-test-detection-and-quarantine.md) | flakiness taxonomy, flake scoring, quarantine workflow, results schema, flake budgets, ownership & dashboards |
 
 ---
 
