@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["json", "url"],
+  "properties": {
+    "url": {
+      "type": "string"
+    },
+    "json": {
+      "type": "object",
+      "required": ["name", "email"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "job": { "type": "string" }
+      }
+    }
+  }
+}

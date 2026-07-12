@@ -1,0 +1,188 @@
+name: Test Automation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Test type to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - web
+          - api
+          - performance
+          - all
+      environment:
+        description: 'Target environment'
+        required: false
+        default: 'stage'
+        type: choice
+        options:
+          - dev
+          - stage
+          - prod
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  web-tests:
+    if: >
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.test_type == 'web' ||
+      github.event.inputs.test_type == 'all'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Run Web Tests
+        run: |
+          mvn test -Pweb \
+            -Denv=${{ github.event.inputs.environment || 'stage' }} \
+            -Dheadless=true \
+            -Dallure.results.directory=target/allure-results
+
+      - name: Copy Allure environment info
+        if: always()
+        run: |
+          mkdir -p target/allure-results
+          echo "Browser=Chrome" > target/allure-results/environment.properties
+          echo "Environment=${{ github.event.inputs.environment || 'stage' }}" >> target/allure-results/environment.properties
+          echo "Platform=ubuntu-latest" >> target/allure-results/environment.properties
+          echo "Java.Version=21" >> target/allure-results/environment.properties
+          cp src/test/resources/categories.json target/allure-results/ || true
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-web
+          path: target/allure-results/
+          retention-days: 30
+
+      - name: Upload Surefire Reports on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-web
+          path: target/surefire-reports/
+          retention-days: 7
+
+  api-tests:
+    if: >
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.test_type == 'api' ||
+      github.event.inputs.test_type == 'all'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run API Tests
+        run: |
+          mvn test -Papi \
+            -Denv=${{ github.event.inputs.environment || 'stage' }} \
+            -Dallure.results.directory=target/allure-results
+
+      - name: Copy Allure metadata
+        if: always()
+        run: |
+          mkdir -p target/allure-results
+          echo "Environment=${{ github.event.inputs.environment || 'stage' }}" > target/allure-results/environment.properties
+          echo "Java.Version=21" >> target/allure-results/environment.properties
+          cp src/test/resources/categories.json target/allure-results/ || true
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-api
+          path: target/allure-results/
+          retention-days: 30
+
+  performance-tests:
+    if: >
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.test_type == 'performance'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Gatling Tests
+        run: mvn gatling:test
+
+      - name: Upload Gatling Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatling-report
+          path: target/gatling/
+          retention-days: 30
+
+  allure-report:
+    needs: [web-tests, api-tests]
+    if: always() && (needs.web-tests.result != 'skipped' || needs.api-tests.result != 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Allure Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
+
+      - name: Get Allure history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Deploy to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
