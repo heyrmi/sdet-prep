@@ -10,10 +10,10 @@
     <name>SDET Interview Prep</name>
     <description>Unified interview preparation: DSA, SDET questions, and test automation</description>
 
+    <!-- framework/ builds standalone (self-contained subtree from heyrmi/framework), outside the reactor -->
     <modules>
         <module>dsa</module>
         <module>sdet</module>
-        <module>framework</module>
     </modules>
 
     <properties>

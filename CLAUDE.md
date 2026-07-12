@@ -10,9 +10,9 @@ Seven pillars:
 
 | Pillar | Path | Stack | What it is |
 |--------|------|-------|-----------|
-| DSA | `dsa/` | Java 25 / Maven | ~189 runnable problems, `Ques{N}_{Name}.java`, one per file |
-| SDET practical | `sdet/` | Java 25 / Maven | ~53 practical problems + 932-question company bank |
-| Framework (Java) | `framework/` | Java 21 / Maven | Selenium+RestAssured+Appium+Gatling automation framework |
+| DSA | `dsa/` | Java 25 / Maven | ~205 runnable problems, `Ques{N}_{Name}.java`, one per file |
+| SDET practical | `sdet/` | Java 25 / Maven | ~61 practical problems + 932-question company bank |
+| Framework (Java) | `framework/` | Java 21 / Maven | Selenium+RestAssured+Appium+Gatling framework (vendored from `heyrmi/framework` via git subtree) |
 | Framework (TS) | `playwright/` | TypeScript / Node 24 | Playwright UI+API framework (vendored from `heyrmi/hlpw` via git subtree) |
 | System Design | `sd/` | Markdown + Go | 30+ lessons + 17 case studies with Go assignments |
 | Tracker | `study-tracker/` | Go | `srs` spaced-repetition CLI indexing DSA+SDET+SD |
@@ -20,14 +20,15 @@ Seven pillars:
 
 ## Build / run / test (by toolchain)
 
-**Java (Maven reactor = `dsa`, `sdet`, `framework` only):**
+**Java (Maven reactor = `dsa`, `sdet` only):**
 ```bash
-mvn clean compile                      # build all Java modules
+mvn clean compile                      # build the reactor (dsa + sdet)
 mvn -pl dsa exec:java -Dexec.mainClass="ra.hul.dsa.arrays.Ques1_TwoSum"   # run a DSA problem
 mvn -pl sdet exec:java -Dexec.mainClass="ra.hul.sdet.fileops.Ques2_LogParser"
-cd framework && mvn test -Pweb         # framework tests: -Pweb/-Papi/-Pmobile/-Psmoke
+cd framework && mvn test -Pweb         # framework builds standalone: -Pweb/-Papi/-Pmobile/-Psmoke/-Pvisual/-Pa11y/-Pcontract
 ```
-`sd/`, `study-tracker/`, and `playwright/` are intentionally **outside** the Maven reactor.
+`sd/`, `study-tracker/`, `playwright/`, and `framework/` are intentionally **outside** the Maven reactor
+(`framework/` is a self-contained subtree with its own standalone pom — see below).
 
 **Go:**
 ```bash
@@ -50,6 +51,10 @@ cd playwright && npm ci && npx playwright install --with-deps && npm test
   `playwright/` (TS). Cross-reference instead.
 - **Framework module** has its own detailed rules in [`framework/CLAUDE.md`](framework/CLAUDE.md)
   (config resolution, ThreadLocal drivers, POM enforcement, TestNG suites). Read it before editing there.
+- **`framework/` is a git subtree** from `github.com/heyrmi/framework` (self-contained, standalone pom,
+  builds outside the reactor). Avoid editing its files directly so upstream sync stays clean; make changes
+  upstream in `heyrmi/framework` then: `git subtree pull --prefix=framework https://github.com/heyrmi/framework main --squash`
+  (and `git subtree push` to send local fixes up).
 - **`playwright/` is a git subtree** from `github.com/heyrmi/hlpw`. Avoid editing its files directly so
   upstream sync stays clean: `git subtree pull --prefix=playwright https://github.com/heyrmi/hlpw main --squash`.
 - **Company bank** is generated from the public ShapeMyInterview API
