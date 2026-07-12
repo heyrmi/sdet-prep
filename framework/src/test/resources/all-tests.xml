@@ -8,6 +8,9 @@
     <suite-files>
         <suite-file path="web-tests.xml"/>
         <suite-file path="api-tests.xml"/>
+        <suite-file path="contract-tests.xml"/>
+        <suite-file path="visual-tests.xml"/>
+        <suite-file path="a11y-tests.xml"/>
         <!-- Removed mobile tests from CI and Local since they require setup -->
         <!-- <suite-file path="mobile-tests.xml"/> -->
     </suite-files>

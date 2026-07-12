@@ -32,6 +32,11 @@
         <jackson.version>3.1.0</jackson.version>
         <lombok.version>1.18.44</lombok.version>
 
+        <!-- Maturity Capability Versions -->
+        <axe-selenium.version>4.10.1</axe-selenium.version>
+        <datafaker.version>2.4.3</datafaker.version>
+        <pact.version>4.6.17</pact.version>
+
         <!-- Plugin Versions -->
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
@@ -133,6 +138,34 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Test-data generation (datafaker) — used by src/main data factories, so compile scope -->
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>${datafaker.version}</version>
+        </dependency>
+
+        <!-- Accessibility (axe-core Selenium binding) — referenced by the src/main AccessibilityUtils, so compile scope -->
+        <dependency>
+            <groupId>com.deque.html.axe-core</groupId>
+            <artifactId>selenium</artifactId>
+            <version>${axe-selenium.version}</version>
+        </dependency>
+
+        <!-- Contract testing (Pact JVM) — test only; DSL used programmatically (no JUnit5 runner) -->
+        <dependency>
+            <groupId>au.com.dius.pact.consumer</groupId>
+            <artifactId>junit5</artifactId>
+            <version>${pact.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>au.com.dius.pact.provider</groupId>
+            <artifactId>junit5</artifactId>
+            <version>${pact.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -170,6 +203,18 @@
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
+                <!--
+                  Pin the TestNG provider. The Pact JVM junit5 artifacts drag JUnit 5 onto the
+                  test classpath, which would otherwise make Surefire auto-select the JUnit
+                  Platform provider and silently ignore our TestNG suite XMLs (Tests run: 0).
+                -->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>${maven-surefire-plugin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <!-- Gatling -->
@@ -219,6 +264,24 @@
             <id>smoke</id>
             <properties>
                 <suiteXmlFile>src/test/resources/smoke-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>visual</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/visual-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>a11y</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/a11y-tests.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>contract</id>
+            <properties>
+                <suiteXmlFile>src/test/resources/contract-tests.xml</suiteXmlFile>
             </properties>
         </profile>
     </profiles>

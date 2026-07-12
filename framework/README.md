@@ -182,6 +182,38 @@ mvn test -Psmoke
 mvn test
 ```
 
+### Maturity Capabilities
+
+Four higher-maturity capabilities are wired in, each fully self-contained and offline (no cloud
+accounts or SaaS). Each has its own profile that swaps the TestNG suite XML.
+
+```bash
+# Visual regression (homegrown pixel-diff) -- needs a browser
+mvn test -Pvisual  -Dheadless=true -Dbrowser=chrome
+
+# Accessibility scan (axe-core) -- needs a browser
+mvn test -Pa11y    -Dheadless=true -Dbrowser=chrome
+
+# Contract testing (Pact JVM) + test-data factories -- no browser needed
+mvn test -Pcontract
+```
+
+| Capability | What it does | Key classes | Config keys |
+|-----------|--------------|-------------|-------------|
+| **Visual regression** | Captures a page/element screenshot, pixel-diffs it against a committed baseline PNG with a configurable tolerance/threshold, writes a highlighted diff, attaches baseline/actual/diff to Allure. Set `-Dvisual.update.baselines=true` to refresh baselines instead of failing. | `web/utils/VisualRegressionUtils` | `visual.baseline.dir`, `visual.output.dir`, `visual.pixel.tolerance`, `visual.diff.threshold`, `visual.update.baselines` |
+| **Accessibility** | Runs an [axe-core](https://github.com/dequelabs/axe-core) WCAG scan of the current page/subtree, filters by WCAG tags, attaches violations (JSON + readable summary) to Allure. | `web/utils/AccessibilityUtils` | `a11y.tags`, `a11y.fail.on.violation` |
+| **Contract testing** | Real Pact JVM **consumer** test built with the DSL programmatically (TestNG-friendly, no JUnit5 runner): spins up the Pact mock server, drives `ApiClient` at it, writes the pact to `target/pacts/`. Plus a lightweight embedded-`HttpServer` **provider** verification that replays the pact. | `tests/contract/ConsumerContractTest`, `tests/contract/ProviderContractVerificationTest` | `pact.output.dir` |
+| **Test-data management** | Deterministic [datafaker](https://www.datafaker.net/)-backed factories (seeded from config) with per-field overrides. | `data/UserFactory`, `data/PostPayloadFactory`, `data/CredentialFactory`, `data/Credentials`, `data/FakerProvider` | `data.faker.seed`, `data.faker.locale` |
+
+**Baselines** live under `src/test/resources/visual/baseline/` (committed). On a fresh checkout the
+first visual run generates the baseline and passes; subsequent runs compare against it. Actual/diff
+artifacts are written to `target/visual/`. Bundled deterministic sample pages live under
+`src/test/resources/pages/` (`visual-sample.html`, `visual-sample-modified.html`, `a11y-sample.html`).
+
+> **Note:** because the Pact JVM `junit5` artifacts drag JUnit 5 onto the test classpath, the
+> Surefire plugin pins the **TestNG** provider (`surefire-testng` plugin dependency) so our TestNG
+> suite XMLs are still honoured. Do not remove that pin.
+
 ### Environment Selection
 
 ```bash

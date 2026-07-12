@@ -23,6 +23,11 @@ mvn test -Pmobile
 mvn test -Psmoke           # cross-module, group="smoke"
 mvn test                    # all-tests.xml
 
+# Maturity capabilities (each profile swaps the suite XML)
+mvn test -Pvisual  -Dheadless=true -Dbrowser=chrome   # visual regression (needs a browser)
+mvn test -Pa11y    -Dheadless=true -Dbrowser=chrome   # accessibility scan (needs a browser)
+mvn test -Pcontract                                    # Pact contract + datafaker tests (no browser)
+
 # Single test class / method (Surefire still uses the suite XML, so -Dtest is filtering)
 mvn test -Pweb -Dtest=LoginTest
 mvn test -Pweb -Dtest=LoginTest#login_validCredentials_shouldShowSecurePage
@@ -54,6 +59,8 @@ Mobile tests require an emulator + running Appium server before `mvn test -Pmobi
 
 **Allure `@Step` requires AspectJ weaver.** The Surefire `argLine` in `pom.xml` injects `-javaagent:.../aspectjweaver.jar`. If `@Step` annotations stop appearing in reports, that javaagent is the first thing to check. Don't remove the `argLine` block when editing other Surefire config.
 
+**Surefire is pinned to the TestNG provider.** The Pact JVM `junit5` artifacts pull JUnit 5 onto the test classpath, which makes Surefire auto-select the JUnit Platform provider and silently ignore our TestNG suite XMLs (`Tests run: 0`). The Surefire plugin therefore declares a `surefire-testng` plugin-level dependency to force the TestNG provider. Do not remove it while the Pact deps are present.
+
 **Auto-applied retry.** `RetryTransformer` is a TestNG `IAnnotationTransformer` registered in every suite XML — it attaches `RetryAnalyzer` (count from `retry.count`) to every `@Test` automatically. Individual tests do not declare retry. To disable for a specific test, the right move is to make `RetryAnalyzer` honor an opt-out attribute, not to special-case the transformer.
 
 **Page/Screen Object Model is enforced, not optional.**
@@ -78,6 +85,40 @@ Every test method declares `@Epic`, `@Feature`, `@Story`, `@Severity` (Allure me
 - New mobile test: add a screen object under `ra.hul.framework.mobile.screens` extending `BaseScreen`. Prefer `AppiumBy.accessibilityId()`. Test class extends `BaseMobileTest` and is registered in `mobile-tests.xml`.
 
 A test class that is not added to its suite XML will silently not run.
+
+## Maturity capabilities
+
+Four self-contained, fully offline capabilities (no cloud/SaaS). All tunables are read via
+`ConfigManager.getOrDefault`/`getIntOrDefault`/`getLongOrDefault` so absence never crashes; defaults
+and keys live in `src/test/resources/config.properties` (this module has no `src/main/resources`, so
+config is loaded from the test classpath).
+
+- **Visual regression** — `web/utils/VisualRegressionUtils` (`src/main`). Homegrown per-pixel
+  `BufferedImage` diff, no external visual SaaS. Captures via `DriverManager.getDriver()` +
+  `TakesScreenshot` (reuses the AllureTestListener screenshot idiom), compares against a committed
+  baseline under `visual.baseline.dir` (default `src/test/resources/visual/baseline/`), writes
+  actual+diff to `visual.output.dir` (default `target/visual/`), attaches baseline/actual/diff to
+  Allure. Never asserts — returns `VisualComparisonResult`; the test asserts. Keys:
+  `visual.baseline.dir`, `visual.output.dir`, `visual.pixel.tolerance`, `visual.diff.threshold`,
+  `visual.update.baselines` (set `true` to (re)write baselines instead of failing). Tests:
+  `tests/visual/VisualRegressionTest`, suite `visual-tests.xml`, profile `visual`.
+- **Accessibility** — `web/utils/AccessibilityUtils` (`src/main`) wraps axe-core's `AxeBuilder`,
+  filters by `a11y.tags` (default `wcag2a,wcag2aa`), attaches violations (JSON via `AxeReporter`
+  + readable summary) to Allure, returns `List<Rule>` for the test to assert. Because a `src/main`
+  util references axe, the `com.deque.html.axe-core:selenium` dep is **compile** scope (not test).
+  Tests: `tests/a11y/AccessibilityTest`, suite `a11y-tests.xml`, profile `a11y`.
+- **Contract testing** — `tests/contract/` (test-only). Real Pact JVM consumer test using the DSL
+  **programmatically** (`ConsumerPactBuilder` + `runConsumerTest`), NOT the JUnit5 extension. Uses
+  the V3 model (`RequestResponsePact`) end-to-end so the embedded-`HttpServer` provider verification
+  can replay `RequestResponseInteraction`s. Pact files land in `pact.output.dir` (default
+  `target/pacts/`). Suite `contract-tests.xml` (also runs `DataFactoryTest`), profile `contract`.
+- **Test-data management** — `data/` (`src/main`): `UserFactory`, `PostPayloadFactory`,
+  `CredentialFactory` + `Credentials` value object, backed by datafaker via `FakerProvider`
+  (seeded from `data.faker.seed` / `data.faker.locale` → deterministic). Fluent `withX(...)`
+  overrides win over generated values; `build()` generates all fields in a fixed order so faker
+  consumption stays deterministic regardless of overrides. `datafaker` is **compile** scope (used
+  from `src/main`). Do NOT route the web login creds through a factory — `tomsmith`/
+  `SuperSecretPassword!` must match the live demo site. Tests: `tests/data/DataFactoryTest`.
 
 ## CI
 
