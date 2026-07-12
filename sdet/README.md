@@ -11,7 +11,7 @@ sdet/
 └── src/main/java/ra/hul/sdet/    runnable solutions (one Ques{N}_{Name}.java per problem)
 ```
 
-## Implemented problems (53 runnable)
+## Implemented problems (61 runnable)
 
 Every file is self-contained with a `static void main()` that runs the logic and prints `PASSED`.
 Run any of them from the repo root:
@@ -26,6 +26,7 @@ mvn -pl sdet exec:java -Dexec.mainClass="ra.hul.sdet.fileops.Ques2_LogParser"
 |----------|---------|-------|-------|
 | File Operations | `fileops` | 8 | diff, log parser, grep clone, word-freq, k-way merge, dup finder, tail -f, config parser |
 | Data Processing | `dataprocessing` | 7 | CSV/JSON/XML parse+validate+transform, merge/dedup, streaming aggregates |
+| Database (JDBC/SQL) | `database` | 8 | JDBC CRUD, PreparedStatement vs injection, transactions/savepoints, batching, joins/aggregation, classic SQL queries, schema validation, data-quality — **runnable on in-memory H2 (no network)** |
 | Regex & Text | `regex` | 7 | email, log, URL, card-masker, HTML-strip, CSV, semver |
 | Multithreading | `multithreading` | 4 | producer-consumer, thread-safe collector, parallel executor, RW-lock |
 | Linux in Java | `linux` | 3 | ProcessBuilder exec, NIO file ops, ProcessHandle monitor |
@@ -37,7 +38,7 @@ mvn -pl sdet exec:java -Dexec.mainClass="ra.hul.sdet.fileops.Ques2_LogParser"
 | Selenium Practical | `selenium` | 1 | broken-link checker — **needs browser/network** |
 
 > **Network/browser problems** hit stable public endpoints (jsonplaceholder, httpbin) or a local
-> browser. The self-contained ones (file/data/regex/concurrency/linux/patterns/builds — 44 of them)
+> browser. The self-contained ones (file/data/regex/concurrency/linux/patterns/builds/database — 52 of them)
 > run offline and self-verify.
 
 ## Not re-implemented here (by design — see the guide for the mapping)

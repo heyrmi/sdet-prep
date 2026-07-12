@@ -23,6 +23,7 @@
         <selenium.version>4.41.0</selenium.version>
         <testng.version>7.12.0</testng.version>
         <restassured.version>6.0.0</restassured.version>
+        <h2.version>2.3.232</h2.version>
     </properties>
 
     <dependencyManagement>
@@ -46,6 +47,11 @@
                 <groupId>io.rest-assured</groupId>
                 <artifactId>json-schema-validator</artifactId>
                 <version>${restassured.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
