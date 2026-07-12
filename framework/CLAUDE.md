@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI assistants working in the **`framework/` module**. For the
+whole mega-repo (all seven pillars + toolchains), see the root [`../CLAUDE.md`](../CLAUDE.md).
 
 ## Project
 
