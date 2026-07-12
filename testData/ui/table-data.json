@@ -1,0 +1,22 @@
+[
+	{
+		"lastName": "Smith",
+		"expectedEmail": "jsmith@gmail.com",
+		"expectedDue": "$50.00"
+	},
+	{
+		"lastName": "Bach",
+		"expectedEmail": "fbach@yahoo.com",
+		"expectedDue": "$51.00"
+	},
+	{
+		"lastName": "Doe",
+		"expectedEmail": "jdoe@hotmail.com",
+		"expectedDue": "$100.00"
+	},
+	{
+		"lastName": "Conway",
+		"expectedEmail": "tconway@earthlink.net",
+		"expectedDue": "$50.00"
+	}
+]

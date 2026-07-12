@@ -1,0 +1,41 @@
+{
+	"compilerOptions": {
+		// Language and Environment
+		"target": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"module": "ESNext",
+		"moduleResolution": "node",
+		// Type Checking
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		// Module Resolution
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"types": ["node", "@playwright/test"],
+		// Path Aliases
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./*"],
+			"@pages/*": ["pageFactory/ui/*"],
+			"@testdata/*": ["testData/*"],
+			"@lib/*": ["lib/*"]
+		},
+		// Emit
+		"noEmit": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": [
+		"tests/**/*.ts",
+		"pageFactory/**/*.ts",
+		"lib/**/*.ts",
+		"testData/**/*.ts",
+		"types/**/*.ts",
+		"*.ts"
+	],
+	"exclude": ["node_modules", "test-results", "playwright-report"]
+}
