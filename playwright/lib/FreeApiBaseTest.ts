@@ -1,4 +1,5 @@
 import { FreeApiClient } from '@lib/api/FreeApiClient';
+import { buildRegistration } from '@lib/data';
 import { test as baseTest } from '@playwright/test';
 import { testConfig } from '@/testConfig';
 
@@ -17,10 +18,8 @@ const test = baseTest.extend<FreeApiFixtures>({
 	},
 
 	authedFreeApi: async ({ playwright }, use): Promise<void> => {
-		const uniqueId = `pw_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-		const email = `${uniqueId}@test.com`;
-		const username = uniqueId;
-		const password = 'TestPass123';
+		// Dynamic, unique credentials come from the shared data factory.
+		const { email, username, password } = buildRegistration();
 
 		// Register and login to get a bearer token
 		const registerCtx = await playwright.request.newContext({

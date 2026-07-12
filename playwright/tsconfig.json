@@ -33,6 +33,7 @@
 		"tests/**/*.ts",
 		"pageFactory/**/*.ts",
 		"lib/**/*.ts",
+		"contract/**/*.ts",
 		"testData/**/*.ts",
 		"types/**/*.ts",
 		"*.ts"

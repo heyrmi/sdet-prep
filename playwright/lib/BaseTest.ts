@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { AbPage } from '@pages/AbPage';
 import { AddRemovePage } from '@pages/AddRemovePage';
 import { BasicAuthPage } from '@pages/BasicAuthPage';
@@ -18,8 +19,42 @@ import { JavaScriptAlertPage } from '@pages/JavaScriptAlertsPage';
 import { LoginPage } from '@pages/LoginPage';
 import { MultipleWindowsPage } from '@pages/MultipleWindowsPage';
 import { NestedFramesPage } from '@pages/NestedFramesPage';
-import { test as baseTest } from '@playwright/test';
+import { test as baseTest, expect, type Locator } from '@playwright/test';
 import { testConfig } from '@/testConfig';
+
+/**
+ * Default WCAG tag set applied by the {@link MaturityFixtures.axeScan} fixture.
+ * Covers WCAG 2.0/2.1 Level A and AA success criteria.
+ */
+const DEFAULT_WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] as const;
+
+/** Options forwarded to `expect(page).toHaveScreenshot(...)`. */
+export type VisualCheckOptions = {
+	maxDiffPixelRatio?: number;
+	maxDiffPixels?: number;
+	fullPage?: boolean;
+	mask?: Locator[];
+	animations?: 'disabled' | 'allow';
+	omitBackground?: boolean;
+	timeout?: number;
+};
+
+// Accessibility + visual maturity fixtures
+type MaturityFixtures = {
+	/**
+	 * Factory that returns an `AxeBuilder` pre-scoped to the current page and
+	 * pre-filtered to WCAG A/AA tags. Pass a custom tag list to override.
+	 */
+	axeScan: (tags?: readonly string[]) => AxeBuilder;
+	/**
+	 * Asserts a visual snapshot of the current page. Thin wrapper over
+	 * `expect(page).toHaveScreenshot(...)` so specs read declaratively.
+	 */
+	visualCheck: (
+		name: string | string[],
+		options?: VisualCheckOptions,
+	) => Promise<void>;
+};
 
 // UI fixtures
 type UiFixtures = {
@@ -46,7 +81,19 @@ type UiFixtures = {
 	secureFileDownloaderPage: FileDownloaderPage;
 };
 
-const test = baseTest.extend<UiFixtures>({
+const test = baseTest.extend<UiFixtures & MaturityFixtures>({
+	axeScan: async ({ page }, use): Promise<void> => {
+		await use((tags: readonly string[] = DEFAULT_WCAG_TAGS) =>
+			new AxeBuilder({ page }).withTags([...tags]),
+		);
+	},
+
+	visualCheck: async ({ page }, use): Promise<void> => {
+		await use(async (name, options) => {
+			await expect(page).toHaveScreenshot(name, options);
+		});
+	},
+
 	homePage: async ({ page }, use): Promise<void> => {
 		await use(new HomePage(page));
 	},
