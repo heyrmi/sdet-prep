@@ -1,0 +1,33 @@
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Reports
+logs/
+html-reports/
+allure-reports/
+
+# IDE
+.idea/
+.vscode/
+
+# Env (ignore all env files)
+.env*
+!.env.example
+
+
+# Review
+improvements.md
+
+# Downloads
+temp-downloads/
+
+# Mac
+.DS_Store
+
+

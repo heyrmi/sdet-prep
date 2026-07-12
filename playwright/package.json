@@ -1,0 +1,38 @@
+{
+	"name": "hlpw",
+	"version": "1.0.0",
+	"description": "Playwright test automation framework covering UI (the-internet) and API (httpbin) testing",
+	"main": "index.js",
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"test": "npx playwright test",
+		"test:ui": "npx playwright test --project=Chrome",
+		"test:api": "npx playwright test --project=API",
+		"test:freeapi": "npx playwright test --project=FreeAPI",
+		"test:smoke": "npx playwright test --grep @smoke",
+		"test:headed": "npx playwright test --headed",
+		"test:debug": "npx playwright test --debug",
+		"report": "npx playwright show-report html-reports",
+		"lint": "npx biome check .",
+		"format": "npx biome format --write ."
+	},
+	"keywords": [
+		"playwright",
+		"testing",
+		"automation",
+		"e2e"
+	],
+	"author": "Rahul Mishra",
+	"license": "MIT",
+	"type": "module",
+	"devDependencies": {
+		"@biomejs/biome": "2.3.13",
+		"@playwright/test": "^1.58.0",
+		"@types/node": "^25.1.0",
+		"dotenv": "^17.2.3",
+		"rimraf": "^6.1.2",
+		"zod": "^4.3.6"
+	}
+}
