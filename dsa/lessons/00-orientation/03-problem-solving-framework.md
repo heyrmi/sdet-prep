@@ -70,26 +70,26 @@ pattern and the approach is half-written.
 ### Recognition cheat-sheet: signal → pattern
 
 Memorize the *signals*, not the solutions. When you hear yourself describe the problem with one of
-these phrases, it points to a pattern (full drills in [`../02-patterns/`](../02-patterns/)):
+these phrases, it points to a pattern (full drills in `../02-patterns/`):
 
 | Signal in the problem | Likely pattern | Drill |
 |-----------------------|----------------|-------|
-| Sorted array, find a pair/triplet, or "two ends moving in" | **Two Pointers** | [2.1](../02-patterns/01-two-pointers/) |
-| Longest/shortest **contiguous** subarray/substring under a constraint | **Sliding Window** | [2.2](../02-patterns/02-sliding-window/) |
-| Cycle detection, find middle of a linked list | **Fast & Slow Pointers** | [2.3](../02-patterns/03-fast-slow-pointers/) |
-| Many **range-sum** queries, "subarray sums to K" | **Prefix Sum** | [2.4](../02-patterns/04-prefix-sum/) |
-| Sorted input, or "search/minimize/maximize a value" | **Binary Search (incl. on the answer)** | [2.5](../02-patterns/05-binary-search/) |
-| Overlapping intervals, meeting rooms, merge ranges | **Intervals & Sorting** | [2.6](../02-patterns/06-intervals/) |
-| Generate **all** combinations/permutations/subsets; n is tiny | **Backtracking** | [2.7](../02-patterns/07-backtracking/) |
-| "Number of ways," "min/max over choices," optimal substructure (1D state) | **DP — 1D** | [2.8](../02-patterns/08-dp-1d/) |
-| Grid paths, edit distance, 2D state table | **DP — 2D & grids** | [2.9](../02-patterns/09-dp-2d/) |
-| Knapsack, string matching, interval DP | **DP — advanced** | [2.10](../02-patterns/10-dp-advanced/) |
-| "Pick the locally-best choice each step" proves optimal | **Greedy** | [2.11](../02-patterns/11-greedy/) |
-| "Top K," "Kth largest/smallest," "merge K sorted," running median | **Heap / Top-K** | [2.12](../02-patterns/12-heap-topk/) |
-| Nodes & edges, connectivity, shortest path, ordering with deps | **Graph algorithms** | [2.13](../02-patterns/13-graph-algorithms/) |
-| Single number, masks, "without extra space," XOR tricks | **Bit Manipulation** | [2.14](../02-patterns/14-bit-manipulation/) |
-| Matrix rotation, GCD, primes, coordinate geometry | **Math & Geometry** | [2.15](../02-patterns/15-math-matrix/) |
-| "Fast lookup / have I seen this / count occurrences" | **Hashing** | [1.2](../01-data-structures/02-hashing/) |
+| Sorted array, find a pair/triplet, or "two ends moving in" | **Two Pointers** | 2.1 |
+| Longest/shortest **contiguous** subarray/substring under a constraint | **Sliding Window** | 2.2 |
+| Cycle detection, find middle of a linked list | **Fast & Slow Pointers** | 2.3 |
+| Many **range-sum** queries, "subarray sums to K" | **Prefix Sum** | 2.4 |
+| Sorted input, or "search/minimize/maximize a value" | **Binary Search (incl. on the answer)** | 2.5 |
+| Overlapping intervals, meeting rooms, merge ranges | **Intervals & Sorting** | 2.6 |
+| Generate **all** combinations/permutations/subsets; n is tiny | **Backtracking** | 2.7 |
+| "Number of ways," "min/max over choices," optimal substructure (1D state) | **DP — 1D** | 2.8 |
+| Grid paths, edit distance, 2D state table | **DP — 2D & grids** | 2.9 |
+| Knapsack, string matching, interval DP | **DP — advanced** | 2.10 |
+| "Pick the locally-best choice each step" proves optimal | **Greedy** | 2.11 |
+| "Top K," "Kth largest/smallest," "merge K sorted," running median | **Heap / Top-K** | 2.12 |
+| Nodes & edges, connectivity, shortest path, ordering with deps | **Graph algorithms** | 2.13 |
+| Single number, masks, "without extra space," XOR tricks | **Bit Manipulation** | 2.14 |
+| Matrix rotation, GCD, primes, coordinate geometry | **Math & Geometry** | 2.15 |
+| "Fast lookup / have I seen this / count occurrences" | **Hashing** | 1.2 |
 
 > **Heuristic:** "contiguous + constraint" → sliding window; "sorted + pair" → two pointers; "fast
 > lookup / seen-before / counts" → hashing; "all possibilities, small n" → backtracking; "min/max
@@ -275,4 +275,4 @@ where it isn't.
 You now have the language (Big-O), the toolkit (Java), and the process (UMPIRE). Time to make data
 structures *real* — starting where half of all interview problems live.
 
-**Next:** [1.1 — Arrays & Strings »](../01-data-structures/01-arrays-and-strings/)
+**Next:** 1.1 — Arrays & Strings »
