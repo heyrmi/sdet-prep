@@ -36,19 +36,19 @@ jobs:
 
       - name: Run API tests
         if: inputs.test-type == 'api'
-        run: mvn test -pl framework -Papi -Dsurefire.useFile=false
+        run: mvn -f framework/pom.xml test -Papi -Dsurefire.useFile=false
 
       - name: Run Web tests
         if: inputs.test-type == 'web'
-        run: mvn test -pl framework -Pweb -Dheadless=true -Dsurefire.useFile=false
+        run: mvn -f framework/pom.xml test -Pweb -Dheadless=true -Dsurefire.useFile=false
 
       - name: Run Smoke tests
         if: inputs.test-type == 'smoke'
-        run: mvn test -pl framework -Psmoke -Dheadless=true -Dsurefire.useFile=false
+        run: mvn -f framework/pom.xml test -Psmoke -Dheadless=true -Dsurefire.useFile=false
 
       - name: Run all tests
         if: inputs.test-type == 'all'
-        run: mvn test -pl framework -Dheadless=true -Dsurefire.useFile=false
+        run: mvn -f framework/pom.xml test -Dheadless=true -Dsurefire.useFile=false
 
       - name: Upload Allure results
         if: always()

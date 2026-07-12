@@ -53,7 +53,7 @@ schedule and history, so it's safe to rebuild the binary anytime.
 ## The daily workflow
 
 ```bash
-srs init        # once — scans ../sd and ../dsa and builds your deck (re-run after adding content)
+srs init        # once — scans ../sd, ../dsa and ../sdet and builds your deck (re-run after adding content)
 srs status      # your dashboard: what's due, your streak, the 7-day forecast
 srs today       # do your reviews — this is the daily habit
 ```
