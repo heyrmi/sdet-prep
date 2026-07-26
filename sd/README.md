@@ -39,9 +39,14 @@ sd/
 │       ├── README.md                 ← the design lesson (requirements → estimate → design → deep dive)
 │       ├── assignment/               ← Go starter code + a test suite that defines "done"
 │       └── solution/                 ← reference Go solution (peek only after you try!)
-├── 05-sdet-system-design/            ← test-flavored system design for the SDET loop (Markdown only)
+├── 05-sdet-system-design/            ← test-flavored system design for the SDET loop
+├── 06-ai-system-design/              ← LLM serving, RAG, agents, model gateway, evals
+├── 07-testing-distributed-systems/   ← how you would actually VERIFY modules 03 & 04
 └── GLOSSARY.md                       ← every term, one-line definition
 ```
+
+Modules 05, 06 and 07 follow the same shape as 02 and 04: lessons plus `assignment/` +
+`solution/` Go exercises.
 
 **Each lesson MD follows the same shape**, so you always know where you are:
 
@@ -148,16 +153,39 @@ Each is a full design lesson **plus** a Go assignment.
 > the same template and can be added as you progress.
 
 ### Module 5 — SDET System Design (design the systems that test the systems)
-Test-flavored system design for the senior SDET interview loop. Discussion/design lessons
-(Markdown only — no Go assignments); see the [module intro](05-sdet-system-design/).
+Test-flavored system design for the senior SDET interview loop. **Every lesson ships a Go
+assignment**; see the [module intro](05-sdet-system-design/).
 
-| # | Lesson | Core concepts exercised |
-|---|--------|--------------------------|
-| 5.1 | [Design a Test Automation Platform](05-sdet-system-design/01-design-a-test-automation-platform.md) | job queue, duration-aware sharding, worker fleet, result store, artifact storage, flake detection, quarantine, shard math |
-| 5.2 | [Design a CI/CD Pipeline](05-sdet-system-design/02-design-a-ci-cd-pipeline.md) | stage DAG, build-once-promote, caching, test impact analysis, quality gates, canary/blue-green/rollback, secrets |
-| 5.3 | [Design Test Infrastructure at Scale](05-sdet-system-design/03-design-test-infrastructure-at-scale.md) | Selenium Grid, containerized browsers, session routing, ephemeral environments, autoscaling, concurrent-session sizing |
-| 5.4 | [Design for Testability](05-sdet-system-design/04-design-for-testability.md) | seams & DI, test hooks, fault injection, test data management, contract testing (Pact), chaos & load harnesses |
-| 5.5 | [Flaky Test Detection & Quarantine](05-sdet-system-design/05-flaky-test-detection-and-quarantine.md) | flakiness taxonomy, flake scoring, quarantine workflow, results schema, flake budgets, ownership & dashboards |
+| # | Lesson | Core concepts exercised | Assignment |
+|---|--------|--------------------------|-----------|
+| 5.1 | [Design a Test Automation Platform](05-sdet-system-design/01-design-a-test-automation-platform.md) | job queue, duration-aware sharding, worker fleet, result store, artifact storage, flake detection, quarantine, shard math | LPT shard balancing, critical path, optimal worker count |
+| 5.2 | [Design a CI/CD Pipeline](05-sdet-system-design/02-design-a-ci-cd-pipeline.md) | stage DAG, build-once-promote, caching, test impact analysis, quality gates, canary/blue-green/rollback, secrets | gate engine + **DORA metrics** and performance bands |
+| 5.3 | [Design Test Infrastructure at Scale](05-sdet-system-design/03-design-test-infrastructure-at-scale.md) | Selenium Grid, containerized browsers, session routing, ephemeral environments, autoscaling, concurrent-session sizing | expiring leases, health ejection, per-tenant fairness |
+| 5.4 | [Design for Testability](05-sdet-system-design/04-design-for-testability.md) | seams & DI, test hooks, fault injection, test data management, contract testing (Pact), chaos & load harnesses | fake clock, seeded PRNG, fault injector, reset registry |
+| 5.5 | [Flaky Test Detection & Quarantine](05-sdet-system-design/05-flaky-test-detection-and-quarantine.md) | flakiness taxonomy, flake scoring, quarantine workflow, results schema, flake budgets, ownership & dashboards | same-commit flake scoring, quarantine state machine, impact ranking |
+
+### Module 6 — AI System Design (the round that didn't exist three years ago)
+Generative-AI system design is now standard in senior loops. See the
+[module intro](06-ai-system-design/).
+
+| # | Lesson | Core concepts exercised | Assignment |
+|---|--------|--------------------------|-----------|
+| 6.1 | [LLM Inference & Serving](06-ai-system-design/01-llm-inference-and-serving.md) | prefill vs decode, **KV cache capacity math**, continuous batching, paged attention, quantization, speculative decoding | continuous-batching scheduler with KV admission control |
+| 6.2 | [Embeddings & Vector Search](06-ai-system-design/02-embeddings-and-vector-search.md) | ANN indexes (HNSW, IVF-PQ), recall/latency/memory trade-offs, filtered ANN, re-embedding migrations | — |
+| 6.3 | [RAG Architecture](06-ai-system-design/03-rag-architecture.md) | chunking, hybrid retrieval, **Reciprocal Rank Fusion**, cross-encoder reranking, context assembly, citations | BM25 + vector hybrid search, RRF, rerank, context budgeting |
+| 6.4 | [Agents, Tool Calling & MCP](06-ai-system-design/04-agents-tool-calling-and-mcp.md) | the agent loop, tool schemas, supervisor topologies, memory handoff, context saturation, MCP, blast radius | — |
+| 6.5 | [Model Gateway: Routing, Caching & Cost](06-ai-system-design/05-model-gateway-routing-and-cost.md) | multi-provider routing, fallback chains, semantic caching, token budgets, cost modelling | router, fallback + circuit breaker, semantic cache, budgets |
+| 6.6 | [Evaluating & Observing AI Systems](06-ai-system-design/06-evaluating-and-observing-ai-systems.md) | golden datasets, LLM-as-judge and its biases, eval gates, drift, tracing | → the [`aiqa/`](../sdet/src/main/java/ra/hul/sdet/aiqa/) pillar |
+
+### Module 7 — Testing Distributed Systems (the bridge module)
+Module 4 taught you to *design* seventeen distributed systems. This one asks how you would know
+if any of them were correct. See the [module intro](07-testing-distributed-systems/).
+
+| # | Lesson | Core concepts exercised | Assignment |
+|---|--------|--------------------------|-----------|
+| 7.1 | [Consistency Checking & Linearizability](07-testing-distributed-systems/01-consistency-checking-and-linearizability.md) | histories, linearizability, the Wing-Gong search, Elle and cycle detection, indeterminate operations | **a real linearizability checker** with shrinking |
+| 7.2 | [Deterministic Simulation Testing](07-testing-distributed-systems/02-deterministic-simulation-testing.md) | seeded schedulers, virtual time, FoundationDB / Antithesis, reproducing a heisenbug from a seed | — |
+| 7.3 | [Fault Injection & Chaos](07-testing-distributed-systems/03-fault-injection-and-chaos.md) | fault taxonomy, pauses vs crashes, blast radius, steady-state hypotheses, game days | — |
 
 ---
 

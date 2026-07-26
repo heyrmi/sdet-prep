@@ -15,8 +15,10 @@ Seven pillars, one workflow:
 | 🏢 | **Company question bank** | **932 real interview questions across 32 companies** (verbal/scenario style), by domain + difficulty. Plus full **model answers for Google/Amazon/Meta/Microsoft/Apple** and a fully-answered JioStar/Hotstar framework round. | [`sdet/company-questions/`](sdet/company-questions/) |
 | ⚙️ | **Automation framework (Java)** | Production-grade **Web + API + Mobile + Performance** framework (Selenium 4, RestAssured, Appium, Gatling, TestNG, Allure, CI) with **visual regression, accessibility (axe-core), Pact contract testing, and data factories**. Vendored from `heyrmi/framework` via git subtree. | [`framework/`](framework/) |
 | 🎭 | **Automation framework (TypeScript)** | A **Playwright** framework — UI + API in TypeScript with Zod schema validation, fixtures, page objects, Biome, CI, plus **cross-browser, visual regression, accessibility (axe-core), Pact contract testing, and faker data factories**. Vendored from `heyrmi/hlpw` via git subtree. | [`playwright/`](playwright/) |
-| 📐 | **System Design** | A ByteByteGo-style course: 30+ first-principles lessons (networking → building blocks → distributed systems) + **17 case studies** (each with a Go assignment + tests) + a **5-lesson SDET-flavored module** (test platforms, CI/CD, test infra, testability, flaky-test quarantine). | [`sd/`](sd/) |
+| 📐 | **System Design** | A ByteByteGo-style course: 30+ first-principles lessons (networking → building blocks → distributed systems) + **17 case studies**, a **5-lesson SDET module**, a **6-lesson AI system design module**, and a **3-lesson distributed-systems testing module** — **28 Go assignments** in total, every solution verified in CI. | [`sd/`](sd/) |
+| 🤖 | **AI/LLM testing** | **8 runnable problems** on the question that most separates candidates in 2026: eval harnesses, golden datasets, LLM-as-judge calibration, retrieval metrics, guardrails, regression gating, non-determinism control, and agent tool-call validation. | [`sdet/…/aiqa/`](sdet/src/main/java/ra/hul/sdet/aiqa/) |
 | 🔁 | **Spaced-repetition tracker** | `srs` — a dependency-free Go CLI that auto-discovers every lesson & problem across DSA + SDET + System Design and schedules **active-recall reviews** (SM-2 / Anki algorithm). | [`study-tracker/`](study-tracker/) |
+| ✅ | **Regression gate** | `verifier` — executes **every one of the 281 problems' `main()`** on each PR and fails the build on any exception, hang, or failed self-check. Plus a mutation-testing profile and a guide-vs-code drift check. | [`verifier/`](verifier/) |
 
 ---
 
@@ -37,7 +39,11 @@ sdet-prep/                        (parent pom — Maven reactor: dsa, sdet; fram
 ├── sdet/                         🛠️ Selenium, RestAssured, TestNG practical problems
 │   ├── SDET_INTERVIEW_QUESTIONS.md  100+ questions, 13 categories, 10 machine-coding builds
 │   ├── company-questions/           🏢 932 Qs × 32 companies + 5 model-answer sets + JioStar deep-dive
-│   └── src/main/java/ra/hul/sdet/   fileops, scraping, api, dataprocessing, selenium, database (JDBC/SQL)…
+│   └── src/main/java/ra/hul/sdet/   fileops, scraping, api, dataprocessing, selenium, database (JDBC/SQL),
+│                                    aiqa/ (AI & LLM testing), propertytesting/ (PBT, shrinking,
+│                                    metamorphic, mutation testing)…
+│
+├── verifier/                     ✅ runs every problem's main() as the PR gate; mutation-testing profile
 │
 ├── framework/                    ⚙️ Java automation framework (Web+API+Mobile+Perf + visual/a11y/contract/data)
 │   ├── README.md · MOBILE_SETUP.md · CLAUDE.md
@@ -52,7 +58,12 @@ sdet-prep/                        (parent pom — Maven reactor: dsa, sdet; fram
 ├── sd/                           📐 System Design course (Markdown lessons + Go assignments)
 │   ├── 00-foundations · 01-networking · 02-building-blocks · 03-distributed-systems
 │   ├── 04-case-studies/             17 systems (rate limiter → payment system), each with Go
-│   └── 05-sdet-system-design/       5 SDET-flavored lessons (test platform, CI/CD, test infra, testability, flaky quarantine)
+│   ├── 05-sdet-system-design/       5 SDET lessons + 5 assignments (test platform, CI/CD + DORA,
+│   │                                device pool, testability seams, flaky quarantine)
+│   ├── 06-ai-system-design/         6 lessons + 3 assignments (LLM serving & KV-cache math, vector
+│   │                                search, RAG + RRF, agents & MCP, model gateway, evals)
+│   └── 07-testing-distributed-systems/  3 lessons + a real linearizability checker
+│                                    (consistency checking, deterministic simulation, chaos)
 │
 └── study-tracker/                🔁 `srs` — spaced-repetition CLI (Go) over DSA + SDET + System Design
 ```
@@ -61,9 +72,11 @@ sdet-prep/                        (parent pom — Maven reactor: dsa, sdet; fram
 
 ## Quick start
 
-### Java reactor (DSA + SDET) — needs JDK 25 + Maven
+### Java reactor (DSA + SDET + verifier) — needs JDK 25 + Maven
 ```bash
-mvn clean compile                                              # build the reactor (dsa + sdet)
+mvn clean install -DskipTests    # build the reactor (dsa + sdet + verifier)
+mvn -pl verifier test            # run ALL 281 problems; ~3s, 10 networked ones skipped
+./scripts/check-coverage.sh      # diff the SDET guide against what is implemented
 
 # run any DSA problem (IDE: just click ▶ on its main())
 cd dsa && mvn exec:java -Dexec.mainClass="ra.hul.dsa.arrays.Ques1_TwoSum"
@@ -114,6 +127,8 @@ Re-run `./srs init` whenever you add content — progress is preserved.
 | 3–6 | SDET practical: file ops → API → Selenium → concurrency → machine-coding builds | `sdet/` |
 | 4–7 | Build/extend the automation frameworks (Java + Playwright); solve the `sdet/` practical problems; defend every design choice | `framework/` + `playwright/` + `sdet/` + JioStar deep-dive |
 | 6–9 | System Design: foundations → building blocks → case studies (design *then* code) | `sd/` |
+| 8–10 | Test-architect modules: SDET system design (5), AI system design (6), distributed-systems testing (7) — do the assignments | `sd/05` · `sd/06` · `sd/07` |
+| 9–11 | AI & advanced testing: eval harnesses, judge calibration, guardrails; property-based, metamorphic, mutation testing | `sdet/…/aiqa/` · `sdet/…/propertytesting/` |
 | 8–12 | Company-specific drilling (answer out loud, time-boxed) + behavioral stories | `sdet/company-questions/` |
 | every day | 20 min of `srs today` — consistency on the forgetting curve is the whole game | tracker |
 
@@ -125,12 +140,21 @@ That was the design goal. Coverage maps to the actual round types:
 
 - **Coding round** → `dsa/` (pattern-based, 205 problems approaching NeetCode-150 breadth).
 - **Automation / test-engineering round** → `framework/` (Java) + `playwright/` (TypeScript) — both with
-  visual regression, accessibility, and Pact contract testing — + 61 runnable `sdet/` solutions (the
+  visual regression, accessibility, and Pact contract testing — + 76 runnable `sdet/` solutions (the
   differentiator — real, production-grade code, not toy snippets).
-- **System-design round** → `sd/` (17 end-to-end case studies + a 5-lesson SDET-flavored system-design module).
+- **System-design round** → `sd/` (17 end-to-end case studies + SDET, AI, and distributed-systems-testing modules).
+- **AI round** → `sd/06-ai-system-design/` for the design side, `sdet/…/aiqa/` for *"how would you
+  test an AI feature?"* — the question that most separates candidates in 2026.
+- **Test-architect signal** → `sd/05` (test platform, DORA, device pools, testability seams),
+  `sd/07` (linearizability, deterministic simulation, chaos), and
+  `sdet/…/propertytesting/` (PBT, shrinking, metamorphic, mutation testing).
 - **Company screen** → `sdet/company-questions/` (932 questions, FAANG + 26 more).
 - **Behavioral** → the *Situational* sections of the company bank + the JioStar deep-dive.
 - **Retention** → `study-tracker/` turns all of it into durable, interview-ready recall.
+
+Everything here is **verified, not asserted**: `verifier/` runs all 281 problems on every PR, every
+Go solution is tested against its own assignment's test suite in CI, and
+`scripts/check-coverage.sh` fails the build if the guide and the source tree drift apart.
 
 Keep pushing volume in the hard-tier DSA and rehearse behavioral stories out loud — those are the
 two areas where more reps always help.

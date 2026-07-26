@@ -11,21 +11,34 @@ Seven pillars:
 | Pillar | Path | Stack | What it is |
 |--------|------|-------|-----------|
 | DSA | `dsa/` | Java 25 / Maven | ~205 runnable problems, `Ques{N}_{Name}.java`, one per file |
-| SDET practical | `sdet/` | Java 25 / Maven | ~61 practical problems + 932-question company bank |
+| SDET practical | `sdet/` | Java 25 / Maven | ~76 practical problems (incl. `aiqa/` and `propertytesting/`) + 932-question company bank |
+| Verifier | `verifier/` | Java 25 / Maven | Runs every problem's `main()` as the PR gate; mutation-testing profile |
 | Framework (Java) | `framework/` | Java 21 / Maven | Selenium+RestAssured+Appium+Gatling framework (vendored from `heyrmi/framework` via git subtree) |
 | Framework (TS) | `playwright/` | TypeScript / Node 24 | Playwright UI+API framework (vendored from `heyrmi/hlpw` via git subtree) |
-| System Design | `sd/` | Markdown + Go | 30+ lessons + 17 case studies with Go assignments |
+| System Design | `sd/` | Markdown + Go | 45+ lessons across modules 00–07, with **28 Go assignments** |
 | Tracker | `study-tracker/` | Go | `srs` spaced-repetition CLI indexing DSA+SDET+SD |
 | Company bank | `sdet/company-questions/` | Markdown | 932 Qs × 32 companies + JioStar deep-dive |
 
+**`sd/` modules:** 00-foundations · 01-networking · 02-building-blocks · 03-distributed-systems ·
+04-case-studies (17) · **05-sdet-system-design** (5 lessons + 5 assignments) ·
+**06-ai-system-design** (6 + 3) · **07-testing-distributed-systems** (3 + 1).
+
 ## Build / run / test (by toolchain)
 
-**Java (Maven reactor = `dsa`, `sdet` only):**
+**Java (Maven reactor = `dsa`, `sdet`, `verifier`):**
 ```bash
-mvn clean compile                      # build the reactor (dsa + sdet)
+mvn clean install -DskipTests          # build the reactor (verifier depends on dsa + sdet artifacts)
+mvn -pl verifier test                  # THE GATE: runs all 281 problems' main(), ~3s
+mvn -pl verifier test -Pmutation       # mutation-test the verifier's oracle (pitest)
 mvn -pl dsa exec:java -Dexec.mainClass="ra.hul.dsa.arrays.Ques1_TwoSum"   # run a DSA problem
 mvn -pl sdet exec:java -Dexec.mainClass="ra.hul.sdet.fileops.Ques2_LogParser"
 cd framework && mvn test -Pweb         # framework builds standalone: -Pweb/-Papi/-Pmobile/-Psmoke/-Pvisual/-Pa11y/-Pcontract
+```
+
+**Drift check:**
+```bash
+./scripts/check-coverage.sh            # SDET guide vs implemented problems
+./scripts/check-coverage.sh --strict   # exit 1 on any UNEXPLAINED gap (this runs in CI)
 ```
 `sd/`, `study-tracker/`, `playwright/`, and `framework/` are intentionally **outside** the Maven reactor
 (`framework/` is a self-contained subtree with its own standalone pom — see below).
@@ -60,6 +73,23 @@ cd playwright && npm ci && npx playwright install --with-deps && npm test
 - **Company bank** is generated from the public ShapeMyInterview API
   (`api.shapemyinterview.com/api/problems?company=<slug>`); regenerate rather than hand-editing.
 - After adding DSA/SDET/SD content, re-run `cd study-tracker && ./srs init` so the tracker indexes it.
+
+### Rules that CI enforces (so don't break them silently)
+
+- **Every problem must print something and self-verify.** `verifier/` fails the build on an
+  exception, a hang (60s), empty output, a line starting `FAIL:`/`FAILED:`/`ERROR:`, or a
+  `=== N passed, M failed ===` summary with `M > 0`. New problems are discovered automatically.
+- **Never use repo-relative paths** like `sdet/src/main/resources/...` — they only work when CWD is
+  the repo root. Resolve test data through the classpath (see `fileops/Ques1_FileComparator`).
+- **A problem that needs network or a browser** goes in
+  `verifier/src/test/resources/network-dependent.txt`, one FQCN per line. It then runs only in the
+  nightly job.
+- **`sd/` assignments must start RED and their solutions must pass** the assignment's own test file.
+  CI copies the test into the solution dir and runs it.
+- **Adding an `sd/` module?** Add it to `lessonModules` in `study-tracker/catalog.go`, or its
+  lessons silently never enter the review deck.
+- **A documented-but-unimplemented SDET question** needs a reason in `EXPECTED_GAPS` in
+  `scripts/check-coverage.sh`, or the `doc-drift` CI job fails.
 
 ## Commit policy
 
