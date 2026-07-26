@@ -1,0 +1,135 @@
+name: CI
+
+# The merge gate. Everything here is hermetic — no live network, no browsers — so a red build
+# always means a real regression, never a flaky third party. Networked checks live in nightly.yml.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  java-problems:
+    name: DSA + SDET problems (266)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Build reactor
+        run: mvn -B clean install -DskipTests
+
+      - name: Run every problem's main()
+        # offline=true skips the 10 problems listed in verifier/src/test/resources/network-dependent.txt
+        run: mvn -B -pl verifier test -Dverifier.offline=true
+
+      - name: Upload verifier report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verifier-surefire-reports
+          path: verifier/target/surefire-reports/
+          retention-days: 7
+
+  doc-drift:
+    name: Guide vs implementation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fails if a documented question has no implementation AND no recorded reason.
+      # This is what stops the guide and the source tree drifting apart silently.
+      - name: Check coverage of the SDET guide
+        run: ./scripts/check-coverage.sh --strict
+
+  go:
+    name: System Design assignments + srs tracker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Test the srs tracker
+        working-directory: study-tracker
+        run: |
+          go vet ./...
+          go test ./...
+          go build -o srs .
+
+      - name: Verify every SD solution passes its assignment's tests
+        # Each case study ships assignment/ (TODO stubs, deliberately red) and solution/ (the
+        # reference implementation). The tests live with the assignment, so to prove a solution is
+        # actually correct we run it against that same test file in a scratch dir.
+        run: |
+          fail=0
+          for dir in $(find sd -type d -name assignment | sort); do
+            sol="${dir%/assignment}/solution"
+            [ -d "$sol" ] || continue
+            test_file=$(ls "$dir"/*_test.go 2>/dev/null | head -1)
+            [ -n "$test_file" ] || continue
+
+            name=$(basename "${dir%/assignment}")
+            tmp=$(mktemp -d)
+            cp "$sol"/*.go "$sol"/go.mod "$tmp"/ 2>/dev/null
+            cp "$test_file" "$tmp"/
+            echo "::group::$name"
+            (cd "$tmp" && go vet ./... && go test ./...) || { echo "::error::$name solution fails its own tests"; fail=1; }
+            echo "::endgroup::"
+            rm -rf "$tmp"
+          done
+          exit $fail
+
+  playwright-lint:
+    name: Playwright framework lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: playwright/package-lock.json
+
+      - name: Install
+        working-directory: playwright
+        run: npm ci
+
+      # Lint only — the suites need live sites, so running them is nightly's job.
+      # (typescript is not a direct devDependency here, so there is no `tsc --noEmit` to run.)
+      - name: Lint
+        working-directory: playwright
+        run: npm run lint
+
+  framework-compile:
+    name: Java framework compiles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      # framework/ is a subtree with a standalone pom, outside the reactor. Compiling its test
+      # sources catches breakage without needing a browser or a live API.
+      - name: Compile framework and its test sources
+        run: mvn -B -f framework/pom.xml clean test-compile
