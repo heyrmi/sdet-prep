@@ -16,8 +16,11 @@ autoscaling, quality gates) applied to the testing domain. This module builds th
 
 Each lesson follows the **same 7-part shape** as the rest of the course (problem → core idea →
 mechanics → trade-offs → in-the-wild → interview angle → practice), with an explicit **SDET
-interview angle** and a **"how this shows up in an SDET loop"** note. These are **discussion/design
-lessons — Markdown only, no Go assignments** (the design *is* the deliverable).
+interview angle** and a **"how this shows up in an SDET loop"** note.
+
+**Every lesson now ships a Go assignment**, exactly like Modules 2 and 4. Reading a design and
+being able to *build* its core are different skills, and only the second one survives an
+interviewer asking "okay, how would you actually implement the quarantine policy?"
 
 **Prerequisites:** you'll get the most out of these after Module 2 (building blocks — queues,
 caching, load balancing) and skimming Module 4's case-study format. The lessons cross-link heavily
@@ -27,13 +30,25 @@ back into those.
 
 ## The lessons
 
-| # | Lesson | Core concepts exercised |
-|---|--------|--------------------------|
-| 5.1 | [Design a Test Automation Platform](01-design-a-test-automation-platform.md) | job queue, duration-aware sharding, worker fleet, result store, artifact/blob storage, flake detection, quarantine, autoscaling, shard math |
-| 5.2 | [Design a CI/CD Pipeline](02-design-a-ci-cd-pipeline.md) | stage DAG, build-once-promote, caching, parallelization, quality gates, test impact analysis, canary/blue-green/rollback, secrets, failure isolation |
-| 5.3 | [Design Test Infrastructure at Scale](03-design-test-infrastructure-at-scale.md) | Selenium Grid, containerized browsers (Selenoid/Moon), session routing & affinity, ephemeral environments, autoscaling, video capture, concurrent-session sizing, build-vs-buy |
-| 5.4 | [Design for Testability](04-design-for-testability.md) | seams & dependency injection, test hooks & observability, fault injection, test data management & seeding, contract testing (Pact), chaos & load harnesses |
-| 5.5 | [Flaky Test Detection & Quarantine](05-flaky-test-detection-and-quarantine.md) | flakiness taxonomy, rerun signatures, statistical flake scoring, quarantine workflow, results DB schema, flake budgets, ownership/alerting, dashboards |
+| # | Lesson | Core concepts exercised | Assignment |
+|---|--------|--------------------------|-----------|
+| 5.1 | [Design a Test Automation Platform](01-design-a-test-automation-platform.md) | job queue, duration-aware sharding, worker fleet, result store, artifact/blob storage, flake detection, quarantine, autoscaling, shard math | [`01-test-platform-assignment/`](01-test-platform-assignment/assignment/) — LPT shard balancing, critical path, optimal worker count, capability constraints |
+| 5.2 | [Design a CI/CD Pipeline](02-design-a-ci-cd-pipeline.md) | stage DAG, build-once-promote, caching, parallelization, quality gates, test impact analysis, canary/blue-green/rollback, secrets, failure isolation | [`02-quality-gates-assignment/`](02-quality-gates-assignment/assignment/) — gate engine with advisory/blocking/mandatory tiers, **DORA metrics**, performance bands |
+| 5.3 | [Design Test Infrastructure at Scale](03-design-test-infrastructure-at-scale.md) | Selenium Grid, containerized browsers (Selenoid/Moon), session routing & affinity, ephemeral environments, autoscaling, video capture, concurrent-session sizing, build-vs-buy | [`03-device-pool-assignment/`](03-device-pool-assignment/assignment/) — expiring leases, least-loaded allocation, health ejection, per-tenant fairness, autoscale |
+| 5.4 | [Design for Testability](04-design-for-testability.md) | seams & dependency injection, test hooks & observability, fault injection, test data management & seeding, contract testing (Pact), chaos & load harnesses | [`04-testability-seams-assignment/`](04-testability-seams-assignment/assignment/) — fake clock, seeded PRNG, fault injector, reset registry |
+| 5.5 | [Flaky Test Detection & Quarantine](05-flaky-test-detection-and-quarantine.md) | flakiness taxonomy, rerun signatures, statistical flake scoring, quarantine workflow, results DB schema, flake budgets, ownership/alerting, dashboards | [`05-flaky-quarantine-assignment/`](05-flaky-quarantine-assignment/assignment/) — same-commit flake scoring, quarantine state machine, impact ranking |
+
+### Working the assignments
+
+```bash
+cd sd/05-sdet-system-design/05-flaky-quarantine-assignment/assignment
+go test ./...          # red — every function is a TODO
+go test -race ./...    # several of these are concurrent by design
+# implement until green; the reference is in ../solution/
+```
+
+Each assignment starts red and each solution is verified green in CI, so a broken reference
+can't sit here unnoticed.
 
 ---
 

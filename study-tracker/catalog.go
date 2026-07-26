@@ -31,11 +31,19 @@ func scanCourses(rootSD, rootDSA, rootSDET string) []*Item {
 // treat them as "problem" items you re-solve).
 func scanSD(root string) []*Item {
 	var items []*Item
+	// Every module whose .md files are lessons. 04-case-studies is handled separately
+	// below because its content lives one directory deeper.
+	//
+	// Keep this list in sync when a module is added — a missing entry is silent, and the
+	// lessons simply never enter the review deck.
 	lessonModules := []string{
 		"00-foundations",
 		"01-networking-and-communication",
 		"02-building-blocks",
 		"03-distributed-systems",
+		"05-sdet-system-design",
+		"06-ai-system-design",
+		"07-testing-distributed-systems",
 	}
 	for _, m := range lessonModules {
 		dir := filepath.Join(root, m)
