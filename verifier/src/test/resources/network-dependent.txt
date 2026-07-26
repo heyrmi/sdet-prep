@@ -1,0 +1,23 @@
+# Problems skipped when -Dverifier.offline=true (the default, and what the PR gate uses).
+# These reach a live external service or a real browser, so they would be flaky as a merge gate.
+# The nightly job runs -Dverifier.offline=false and includes them, where flakiness is tolerable.
+#
+# Deliberately NOT listed (verified self-contained, so they run in the PR gate):
+#   builds.Ques7_ApiMockServer            - binds a localhost HttpServer, no external calls
+#   designpatterns.Ques2/Ques3            - simulate the driver lifecycle, never launch a browser
+
+# --- REST Assured against live public APIs ---
+ra.hul.sdet.api.Ques1_GetRequestValidation
+ra.hul.sdet.api.Ques2_PostRequestValidation
+ra.hul.sdet.api.Ques3_ApiChainingCrud
+ra.hul.sdet.api.Ques4_JsonSchemaValidation
+ra.hul.sdet.api.Ques5_RateLimitingRetry
+ra.hul.sdet.api.Ques6_ResponseTimePercentiles
+
+# --- load/throughput against httpbin.org ---
+ra.hul.sdet.performance.Ques1_SimpleLoadTest
+ra.hul.sdet.performance.Ques2_ApiThroughputMeasurement
+
+# --- live HTML fetch / real browser ---
+ra.hul.sdet.scraping.Ques1_ScrapePageTitles
+ra.hul.sdet.selenium.Ques1_BrokenLinkChecker

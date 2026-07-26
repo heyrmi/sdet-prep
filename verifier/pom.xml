@@ -1,0 +1,126 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ra.hul</groupId>
+        <artifactId>sdet-prep</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>verifier</artifactId>
+    <name>Problem Verifier</name>
+    <description>Executes every Ques*.java main() in dsa/ and sdet/ and fails the build on any error</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>ra.hul</groupId>
+            <artifactId>dsa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ra.hul</groupId>
+            <artifactId>sdet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <!-- offline=true (default) skips problems that need network or a browser -->
+                    <systemPropertyVariables>
+                        <verifier.offline>${verifier.offline}</verifier.offline>
+                        <verifier.timeoutSeconds>${verifier.timeoutSeconds}</verifier.timeoutSeconds>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <verifier.offline>true</verifier.offline>
+        <verifier.timeoutSeconds>60</verifier.timeoutSeconds>
+        <pitest.version>1.25.8</pitest.version>
+        <mutation.targetClasses>ra.hul.verify.*</mutation.targetClasses>
+    </properties>
+
+    <profiles>
+        <!--
+            Mutation testing:  mvn -pl verifier test -Pmutation
+
+            Pitest introduces deliberate faults (flip a conditional, change a boundary, remove a
+            call) and asks whether any test NOTICES. A surviving mutant is a concrete gap that
+            line coverage cannot show you — coverage says the line RAN, mutation testing says
+            whether anything would have caught it being WRONG.
+
+            The target here is OutcomeAnalyzer, the verifier's oracle. That is a deliberate
+            choice, not a convenience: the oracle is the one component whose bugs are SILENT.
+            A broken runner fails the build loudly; a broken oracle passes everything forever.
+            Current score: 18 mutations, 18 killed (100%).
+
+            SCOPE LIMITATION, stated plainly: pitest only mutates classes in the module it runs
+            in. It cannot mutate ra.hul.dsa.* / ra.hul.sdet.* from here, because those live in
+            sibling modules and arrive as dependencies. Mutating the problem code would require
+            co-locating tests inside dsa/ and sdet/, which cuts against this repo's
+            one-file-per-problem convention. The concept is instead taught end to end as a
+            runnable problem: sdet/propertytesting/Ques4_MutationTesting.java.
+
+            Report: verifier/target/pit-reports/index.html
+        -->
+        <profile>
+            <id>mutation</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>${pitest.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>1.2.3</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <targetClasses>
+                                <param>${mutation.targetClasses}</param>
+                            </targetClasses>
+                            <targetTests>
+                                <param>ra.hul.verify.*</param>
+                            </targetTests>
+                            <outputFormats>
+                                <param>HTML</param>
+                                <param>XML</param>
+                            </outputFormats>
+                            <timestampedReports>false</timestampedReports>
+                            <!-- No threshold enforced. This is a diagnostic to read, not yet a
+                                 gate — turning it into a gate before you know the baseline is how
+                                 you end up disabling it. -->
+                            <failWhenNoMutations>false</failWhenNoMutations>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
